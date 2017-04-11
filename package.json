@@ -1,0 +1,42 @@
+{
+  "name": "erp-api",
+  "version": "1.0.0",
+  "description": "API que nos ayuda a conectarnos con nuestro ERP Intelisis.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rafael Flores Ramírez",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "body-parser": "^1.13.3",
+    "chai-as-promised": "^5.3.0",
+    "cron": "^1.1.0",
+    "crypto": "0.0.3",
+    "express": "^4.13.3",
+    "favicon": "0.0.2",
+    "jsonwebtoken": "^5.0.5",
+    "mysql": "^2.9.0",
+    "q": "^1.4.1",
+    "request": "^2.72.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.5.0",
+    "eslint-config-airbnb": "^11.1.0",
+    "eslint-plugin-import": "^1.15.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0"
+  },
+  "peerDependencies": {
+    "eslint": "^3.5.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-import": "^1.15.0",
+    "eslint-plugin-react": "^6.3.0"
+  }
+}
