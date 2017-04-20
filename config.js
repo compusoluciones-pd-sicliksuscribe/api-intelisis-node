@@ -27,8 +27,8 @@ module.exports = {
   // // PRUEBAS //////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////////
 
-  ApiErp: 'https://ws.compusoluciones.com/IntelisisPruebas/',
-  // ApiErp: 'http://localhost:54228/',
+  // ApiErp: 'https://ws.compusoluciones.com/IntelisisPruebas/',
+  ApiErp: 'http://localhost:54228/',
   AccessControlAllowOrigin: '*',
   connectionPool: mySqlModel.createPool({
     connectionLimit: 10,
