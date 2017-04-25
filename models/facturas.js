@@ -106,7 +106,6 @@ facturas.facturar = (params) => {
       Vencimiento: params.Vencimiento,
       Agente: params.Agente,
     };
-    console.log(parametros);
     request.post(config.ApiErp + 'Venta', {
       headers: { token: config.TokenERP },
       form: parametros,
