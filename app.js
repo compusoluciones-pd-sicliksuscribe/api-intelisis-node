@@ -29,6 +29,9 @@ app.use((req, res, next) => {
 const routeERP = require('./routes/ERP');
 app.use('/', routeERP);
 
+const billing = require('./api-routes/billing');
+app.use('/', billing);
+
 // Puerto que corre la API
 const port = process.env.PORT || 8081;
 app.listen(port);

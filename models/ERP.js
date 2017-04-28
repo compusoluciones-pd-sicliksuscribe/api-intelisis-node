@@ -15,12 +15,12 @@ const ERP = {};
 ERP.actualizar = () => {
   const deferred = Q.defer();
   facturas.generar()
-    .then(facturas.generarBajoConsumo)
-    .then(pedidos.obtenerPagados)
-    .then(tipoCambio.obtener)
-    .then(credito.actualizarClientes)
-    .then(distribuidores.obtener)
-    .then(productos.obtener)
+    // .then(facturas.generarBajoConsumo)
+    // .then(pedidos.obtenerPagados)
+    // .then(tipoCambio.obtener)
+    // .then(credito.actualizarClientes)
+    // .then(distribuidores.obtener)
+    // .then(productos.obtener)
     .catch(error => deferred.reject(error))
     .done(() => deferred.resolve(help.r$(1, 'ERP Actualizado')));
   return deferred.promise;
