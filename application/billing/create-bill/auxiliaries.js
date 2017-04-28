@@ -8,12 +8,19 @@ class Auxiliaries {
 
   bill(ordersToBill) {
     if (ordersToBill.data) {
-
       return promiseFor(count => count < ordersToBill.data.length,
       count => this.intelisis.getSale(ordersToBill.data[count].IdPedido)
         .then((result) => {
           console.log(ordersToBill.data[count].IdPedido);
           console.log(JSON.parse(result));
+          if(JSON.parse(result).length > 0) {
+            this.updateSalesId(JSON.parse(result)[0])
+              .then((res) => {
+
+              });
+          }else {
+            this.
+          }
           return ++count;
         })
       , 0).then(() => 'Ordenes facturadas');
@@ -28,6 +35,10 @@ class Auxiliaries {
       //   , 0).then(() => 'Ordenes facturadas');
     }
     return Promise.reject('Ordenes facturadas 2');
+  }
+
+  updateSalesId() {
+
   }
 
 }
