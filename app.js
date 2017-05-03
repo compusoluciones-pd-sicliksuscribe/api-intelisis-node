@@ -10,7 +10,7 @@ const Jobs = require('./models/jobs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // Inicializador de Jobs
-Jobs.start();
+//Jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
@@ -28,6 +28,9 @@ app.use((req, res, next) => {
 // Unica ruta "ERP"
 const routeERP = require('./routes/ERP');
 app.use('/', routeERP);
+
+const billing = require('./api-routes/billing');
+app.use('/', billing);
 
 // Puerto que corre la API
 const port = process.env.PORT || 8081;
