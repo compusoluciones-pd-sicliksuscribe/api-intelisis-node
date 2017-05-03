@@ -17,7 +17,7 @@ SELECT DISTINCT
   WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
   AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL AND P.FechaFin IS NOT NULL
   AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
-    WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= '2017-05-22' AND Pro.IdTipoProducto = 3
+    WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
   END
   `);
 
