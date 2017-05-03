@@ -10,7 +10,7 @@ const Jobs = require('./models/jobs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // Inicializador de Jobs
-Jobs.start();
+//Jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect

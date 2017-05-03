@@ -5,7 +5,7 @@ const validation = require('./validation');
 class CreateBilling {
   constructor(billingData, ordersData, intelisis) {
     this.billingData = billingData;
-    this.auxiliaries = new Auxiliaries(ordersData, intelisis);
+    this.auxiliaries = new Auxiliaries(ordersData, intelisis, billingData);
   }
 
   billAll() {

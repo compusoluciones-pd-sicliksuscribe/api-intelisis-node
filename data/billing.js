@@ -21,6 +21,27 @@ SELECT DISTINCT
   END
   `);
 
+billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
+    SELECT 
+      ? AS ID, P.IdERP AS Articulo, PD.Cantidad, PD.IdPedido, 
+      CASE 
+        WHEN PD.MonedaPrecio = Ped.MonedaPago 
+          THEN PD.PrecioUnitario 
+        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' 
+          THEN PD.PrecioUnitario * Ped.TipoCambio 
+        WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos' 
+          THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio 
+    FROM traPedidoDetalles PD 
+    INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto 
+    INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido 
+    WHERE PD.IdPedido = ?;`,
+  [ID, IdPedido]);
 
+billing.selectRP = IdPedido => help.d$().query(`
+     SELECT IFNULL(TipoCambioRP, 0 ) AS TipoCambioRP FROM traPedidos P 
+    INNER JOIN traPedidoDetalles PD ON P.IdPedido = PD.IdPedido 
+    INNER JOIN traEmpresasXEmpresas EXE ON EXE.IdEmpresaDistribuidor = P.IdEmpresaDistribuidor AND EXE.IdEmpresaUsuarioFinal = P.IdEmpresaUsuarioFinal
+    WHERE PD.IdPedido = ? AND PD.Activo = 1 LIMIT 1`,
+  [IdPedido]);
 
 module.exports = billing;
