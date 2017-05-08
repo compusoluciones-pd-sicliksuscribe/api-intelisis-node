@@ -8,7 +8,8 @@ const Q = require('q');
 const pedidos = {};
 
 // Consulta en el API de Intelisis la lista de los pedidos o facturas que ya fueron pagadas
-pedidos.obtenerPagados = () => {
+pedidos.obtenerPagados = (dat) => {
+  console.log(dat);
   const deferred = Q.defer();
   request.get(config.ApiErp + 'Venta',
     { headers: { token: config.TokenERP } }, (error, response, body) => {

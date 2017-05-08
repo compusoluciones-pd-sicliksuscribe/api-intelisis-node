@@ -27,7 +27,7 @@ class Auxiliaries {
           })
         , 0).then(() => 'Ordenes facturadas');
     }
-    return Promise.reject('No hay ordenes por facturar');
+    return Promise.resolve('No hay ordenes por facturar');
   }
 
   updateSalesId(ID, IdPedido) {

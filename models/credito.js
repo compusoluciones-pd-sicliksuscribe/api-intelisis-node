@@ -52,6 +52,7 @@ credito.actualizarCredito = (cliente, credito) => {
         (error, response, body) => {
           if (body) {
             const json = JSON.parse(body);
+            console.log(json);
             if (json[0].Success === false) {
               deferred.resolve(help.r$(0, json[0].Message, json[0].Dato));
             } else {
