@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const ERP = require('../models/ERP');
 const credito = require('../models/credito');
-
+const distribuidores = require('../models/distribuidores');
 /*
 https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#comments
 */
@@ -18,10 +18,26 @@ https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#comments
 */
 
 router.get('/Actualizar', (request, response) => {
-  ERP.actualizar()
-    .catch((error) => { response.send(error); })
-    .done((result) => { response.send(result); });
+  if (global.ActualizandoERP === 0) {
+    response.send('Actualizando');
+    ERP.actualizar();
+  } else {
+    response.send('Actualización en proceso.');
+  }
 });
+
+router.put('/actualizar/distribuidores', (req, res) => {
+  if (global.ActualizandoDistribuidores === 0) {
+    res.send('Actualizando');
+    global.ActualizandoDistribuidores = 1;
+    distribuidores.obtener()
+    .done(() => {
+      global.ActualizandoDistribuidores = 0;
+    });
+  } else {
+    res.send('Actualización en proceso.');
+  }
+})
 
 /*
 * @namespace Credito

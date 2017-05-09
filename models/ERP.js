@@ -23,7 +23,10 @@ ERP.actualizar = () => {
     .then(distribuidores.obtener)
     .then(productos.obtener)
     .catch(error => deferred.reject(error))
-    .done(() => deferred.resolve(help.r$(1, 'ERP Actualizado')));
+    .done(() => {
+      global.ActualizandoERP = 0;
+      return deferred.resolve(help.r$(1, 'ERP Actualizado'))
+    });
   return deferred.promise;
 };
 

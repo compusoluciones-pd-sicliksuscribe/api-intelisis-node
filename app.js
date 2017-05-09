@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 const config = require('./config');
 const Jobs = require('./models/jobs');
 
+global.ActualizandoERP = 0;
+global.ActualizandoDistribuidores = 0;
+
 // url enconded y el parser con el formato json
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

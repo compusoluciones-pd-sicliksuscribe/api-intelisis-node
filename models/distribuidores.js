@@ -4,6 +4,7 @@ const help = require('../helpers/help');
 const config = require('../config');
 const request = require('request');
 const Q = require('q');
+const promiseFor = require('../helpers/promise-for');
 
 const distribuidores = {};
 
@@ -24,23 +25,28 @@ distribuidores.obtener = () => {
 // Guarda los distribuidores en el marketplace o los actualiza si ya existe
 distribuidores.barrerDistribuidores = (distribuidoresERP) => {
   const deferred = Q.defer();
+  let contador = 0;
   if (distribuidoresERP) {
-    for (let i = 0; i < distribuidoresERP.length; i += 1) {
-      distribuidores.valido(distribuidoresERP[i]).then((r$) => {
-        if (r$.success === 1) {
-          const empresa = {
-            pIdERP: r$.data.IdERP, pRFC: r$.data.RFC, pNombreEmpresa: r$.data.NombreEmpresa, pDireccion: r$.data.Direccion,
-            pCiudad: r$.data.Ciudad, pEstado: r$.data.Estado, pCodigoPostal: r$.data.CodigoPostal, pNombreContacto: null, pApellidosContacto: null,
-            pCorreoContacto: null, pTelefonoContacto: null, pCredito: null, pZonaImpuesto: r$.data.ZonaImpuesto, pLada: null, IdMicrosoftUF: null,
-            IdMicrosoftDist: r$.data.IdMicrosoft, IdAutodeskUF: null, IdAutodeskDist: r$.data.IdAutodesk, ContratoAutodeskUF: null, DominioMicrosoftUF: null,
-            RazonSocial: r$.data.RazonSocial,
-          };
-          help.d$().callStoredProcedure('traEmpresas_insert', empresa)
-            .catch(error => deferred.reject(error));
-        }
-      }).catch(error => deferred.reject(error));
-    }
-    deferred.resolve(help.r$(1, 'distribuidores actualizados'));
+    return promiseFor(count => count < distribuidoresERP.length,
+      (count) => {
+        return distribuidores.valido(distribuidoresERP[count]).then((r$) => {
+          if (r$.success === 1) {
+            const empresa = {
+              pIdERP: r$.data.IdERP, pRFC: r$.data.RFC, pNombreEmpresa: r$.data.NombreEmpresa, pDireccion: r$.data.Direccion,
+              pCiudad: r$.data.Ciudad, pEstado: r$.data.Estado, pCodigoPostal: r$.data.CodigoPostal, pNombreContacto: null, pApellidosContacto: null,
+              pCorreoContacto: null, pTelefonoContacto: null, pCredito: null, pZonaImpuesto: r$.data.ZonaImpuesto, pLada: null, IdMicrosoftUF: null,
+              IdMicrosoftDist: r$.data.IdMicrosoft, IdAutodeskUF: null, IdAutodeskDist: r$.data.IdAutodesk, ContratoAutodeskUF: null, DominioMicrosoftUF: null,
+              RazonSocial: r$.data.RazonSocial,
+            };
+            console.log(empresa.RazonSocial);
+            return help.d$().callStoredProcedure('traEmpresas_insert', empresa)
+              .then(res => ++count)
+          } else {
+            ++contador;
+            return ++count;
+          }
+        });
+      }, 0).then((res) => deferred.resolve(help.r$(1, 'distribuidores actualizados')));
   } else { deferred.reject(help.r$(0, 'Sin distribuidores que actualizar')); }
   return deferred.promise;
 };
