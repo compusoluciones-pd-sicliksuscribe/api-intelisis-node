@@ -52,11 +52,14 @@ credito.actualizarCredito = (cliente, credito) => {
         (error, response, body) => {
           if (body) {
             const json = JSON.parse(body);
-            console.log(json);
-            if (json[0].Success === false) {
-              deferred.resolve(help.r$(0, json[0].Message, json[0].Dato));
+            if (json) {
+              if (json[0].Success === false) {
+                deferred.resolve(help.r$(0, json[0].Message, json[0].Dato));
+              } else {
+                deferred.resolve(help.r$(1, json[0].Message, json[0].Dato));
+              }
             } else {
-              deferred.resolve(help.r$(1, json[0].Message, json[0].Dato));
+              deferred.reject(help.r$(0, 'No se regresa información al actualizar el crédito del cliente'));
             }
           } else {
             if (error) { deferred.reject(help.r$(0, error)); } else { deferred.reject(help.r$(0, 'Error con el body', body)); }
