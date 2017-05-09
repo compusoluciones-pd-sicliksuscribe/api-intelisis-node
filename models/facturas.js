@@ -118,7 +118,7 @@ facturas.facturar = (params) => {
             .then(facturas.barrerDetalle)
             .then((resultado) => {
               parametros.ID = resultado.data;
-              return deferred.resolve(help.r$(1,'Detalles insertados',parametros));
+              return deferred.resolve(help.r$(1, 'Detalles insertados', parametros));
             })
             .catch(errorObtenerDetalle => deferred.reject(errorObtenerDetalle))
         } else { deferred.reject(help.r$(0, 'Error con el json al generar la factura')); }
@@ -134,7 +134,7 @@ facturas.obtenerDetalle = (pedidoInsertado) => {
   if (pedidoInsertado) {
     help.d$().query(`
     SELECT 
-      ? AS ID, P.IdERP AS Articulo, PD.Cantidad, 
+      ? AS ID, P.IdERP AS Articulo, PD.Cantidad, PD.IdPedido, 
       CASE 
         WHEN PD.MonedaPrecio = Ped.MonedaPago 
           THEN PD.PrecioUnitario 
@@ -164,29 +164,39 @@ facturas.barrerDetalle = (pedidoDetalles) => {
       return facturas.guardarDetalle(pedidoDetalles.data[count])
         .then(() => ++count);
     }, 0).then(() => {
-      facturas.insertarRP(ID)
-        .then((pedido) => deferred.resolve(help.r$(1, 'Detalles insertados 1',ID)))
+      facturas.insertarRP(ID, pedidoDetalles.data[0].IdPedido)
+        .then((pedido) => deferred.resolve(help.r$(1, 'Detalles insertados 1', ID)))
         .catch(error => deferred.reject(help.r$(0, 'Error al insertar RP', error)));
-    }).catch((err) => deferred.reject(help.r$(0, 'Error con el detalle del pedido '+ err)));
+    }).catch((err) => deferred.reject(help.r$(0, 'Error con el detalle del pedido ' + err)));
   } else { deferred.reject(help.r$(0, 'Error con el detalle del pedido ' + pedidoDetalles)); }
   return deferred.promise;
 };
 
 // En caso de tener un tipo de cambio especial se inserta un RP
-facturas.insertarRP = (ID) => {
+facturas.insertarRP = (ID, IdPedido) => {
   const deferred = Q.defer();
-  request.put(config.ApiErp + 'VentaD', {
-    headers: { token: config.TokenERP },
-    form: {
-      ID,
-    },
-  }, (error, response, body) => {
-    if (JSON.parse(body)[0].oResultado) {
-      deferred.resolve(help.r$(1, 'RP actualizado', body));
-    } else {
-      deferred.reject(help.r$(0, 'Error al actualizar RP', JSON.parse(body)[0].oResultado))
-    }
-  });
+  help.d$().query(`
+     SELECT IFNULL(TipoCambioRP, 0 ) AS TipoCambioRP FROM traPedidos P 
+    INNER JOIN traPedidoDetalles PD ON P.IdPedido = PD.IdPedido 
+    INNER JOIN traEmpresasXEmpresas EXE ON EXE.IdEmpresaDistribuidor = P.IdEmpresaDistribuidor AND EXE.IdEmpresaUsuarioFinal = P.IdEmpresaUsuarioFinal
+    WHERE PD.IdPedido = ? AND PD.Activo = 1 LIMIT 1`,
+    [IdPedido])
+    .then((RP) => {
+      const TipoCambioRP = RP.data[0].TipoCambioRP;
+      request.put(config.ApiErp + 'VentaD', {
+        headers: { token: config.TokenERP },
+        form: {
+          ID,
+          TipoCambioRP,
+        },
+      }, (error, response, body) => {
+        if (JSON.parse(body)[0].oResultado) {
+          deferred.resolve(help.r$(1, 'RP actualizado', body));
+        } else {
+          deferred.reject(help.r$(0, 'Error al actualizar RP', JSON.parse(body)[0].oResultado))
+        }
+      });
+    });
   return deferred.promise;
 };
 
@@ -194,12 +204,14 @@ facturas.insertarRP = (ID) => {
 facturas.guardarDetalle = (pedidoDetalle) => {
   const deferred = Q.defer();
   if (pedidoDetalle) {
-    const parametros = { ID: pedidoDetalle.ID,
+    const parametros = {
+      ID: pedidoDetalle.ID,
       Articulo: pedidoDetalle.Articulo,
       Cantidad: pedidoDetalle.Cantidad,
       Precio: pedidoDetalle.Precio,
       RenglonID: pedidoDetalle.RenglonID,
-      Renglon: pedidoDetalle.Renglon };
+      Renglon: pedidoDetalle.Renglon
+    };
     request.post(config.ApiErp + 'VentaD', {
       headers: { token: config.TokenERP },
       form: parametros,
@@ -217,7 +229,7 @@ facturas.guardarDetalle = (pedidoDetalle) => {
           } else { deferred.resolve(help.r$(0, 'Error del body al guardar el detalle de la factura')); }
         } else { deferred.reject(help.r$(0, 'Error con el json al generar el detalle de la factura')); }
       });
-  } else { deferred.reject(help.r$(0, 'Error con el detalle del pedido')); } 
+  } else { deferred.reject(help.r$(0, 'Error con el detalle del pedido')); }
   return deferred.promise;
 };
 

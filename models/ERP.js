@@ -9,13 +9,14 @@ const distribuidores = require('./distribuidores');
 const productos = require('./productos');
 const Q = require('q');
 
+const billing = require('../application/billing');
+
 const ERP = {};
 
 // Mando a llamar todas las funciones de este modelo y regreso promesa
 ERP.actualizar = () => {
   const deferred = Q.defer();
-  facturas.generar()
-    .then(facturas.generarBajoConsumo)
+  billing.createBilling.billAll()
     .then(pedidos.obtenerPagados)
     .then(tipoCambio.obtener)
     .then(credito.actualizarClientes)
