@@ -20,24 +20,25 @@
     "jsonwebtoken": "^5.0.5",
     "mysql": "^2.9.0",
     "q": "^1.4.1",
+    "ramda": "^0.24.1",
     "request": "^2.72.0",
     "request-promise": "^4.1.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^2.5.3",
-    "sinon": "^1.17.4",
     "babel-eslint": "^6.1.2",
+    "chai": "^3.5.0",
     "eslint": "^3.5.0",
     "eslint-config-airbnb": "^11.1.0",
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0"
+    "eslint-plugin-react": "^6.3.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4"
   },
   "peerDependencies": {
     "eslint": "^3.5.0",
-    "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-import": "^1.15.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.3.0"
   }
 }

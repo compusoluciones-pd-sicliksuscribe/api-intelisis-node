@@ -4,6 +4,7 @@ const help = require('../helpers/help');
 const config = require('../config');
 const request = require('request');
 const Q = require('q');
+const { isNil } = require('ramda');
 
 const productos = {};
 
@@ -74,14 +75,14 @@ productos.valido = (producto) => {
   if (producto.Nombre.esVacio()) { valido = false; errores += 'el nombre está vacio '; }
   if (!producto.Nombre.longitudValida()) { valido = false; errores += 'el nombre tiene longitud inválida '; }
   if (!producto.IdFabricante) { valido = false; errores += 'el id fabricante está vacio '; }
-  if (!producto.PrecioNormal) { valido = false; errores += 'el precio normal está vacio '; }
-  if (producto.MonedaPrecio.esVacio()) { valido = false; errores += 'la moneda precio está vacio '; }
   if (!producto.IdTipoProducto) { valido = false; errores += 'el id tipo producto está vacio '; }
+  if (isNil(producto.PrecioNormal) || producto.PrecioNormal < 0 ) { valido = false; errores += 'el precio normal está vacio '; }
+  if (producto.MonedaPrecio.esVacio()) { valido = false; errores += 'la moneda precio está vacio '; }
   if (!producto.Activo) { valido = false; errores += 'el campo activo está vacio '; }
   if (!producto.Visible) { valido = false; errores += 'el campo visible está vacio '; }
   if (!producto.IdProductoFabricante) { valido = false; errores += 'el id producto fabricante está vacio '; }
   if (producto.CantidadMinima >= producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es igual o mayor a la cantidad máxima '; }
-  if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else { 
+  if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else {
     deferred.resolve(help.r$(0, errores, producto)); }
   return deferred.promise;
 };
