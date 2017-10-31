@@ -5,4 +5,4 @@ Para liberar a producción la aplicación es necesario seguir los siguientes pas
 
 *  Dentro de la consola de amazon cs-ti, dentro del servicio elastick-beanstalk, seleccionar la instancia **intelisis-api**, hay que revisar el nombre de la versión actual, copiar el nombre y modificar el .zip creado anterior mente con este nombre, agregando el número de la nueva versión, siguiendo un versionado semántico.
 
-*  Seleccionar la opción dentro de la instancia **Uload and Deploy** y subir el .zip creado anterior mente, con su nuevo nombre y seleccionar **Deploy**.
+*  Seleccionar la opción dentro de la instancia **Upload and Deploy** y subir el .zip creado anterior mente, con su nuevo nombre y seleccionar **Deploy**.
