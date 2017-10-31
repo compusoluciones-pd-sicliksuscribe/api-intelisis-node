@@ -5,10 +5,15 @@ const app = express();
 const bodyParser = require('body-parser');
 const config = require('./config');
 const Jobs = require('./models/jobs');
+const expressLogger = require('./helpers/logger').expressLogger;
+const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
+const logger = require('./helpers/logger').debugLogger;
 
 // url enconded y el parser con el formato json
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(expressLogger);
+app.use(expressConsoleLogger);
 // Inicializador de Jobs
 Jobs.start();
 // configuración de la API general
@@ -33,9 +38,9 @@ const billing = require('./api-routes/billing');
 app.use('/', billing);
 
 // Puerto que corre la API
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || 8088;
 app.listen(port);
 
-console.log('intelisis-api running local @ http://localhost:' + port);
+logger.info('intelisis-api running local @ http://localhost:' + port);
 
 module.exports = app;
