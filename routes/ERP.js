@@ -37,4 +37,5 @@ router.post('/Credito', (request, response) => {
     .done(result => response.send(result));
 });
 
+
 module.exports = router;

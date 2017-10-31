@@ -2,7 +2,7 @@
 
 const help = require('../helpers/help');
 const config = require('../config');
-const request = require('request');
+const { request } = require('../helpers/logged-request');
 const Q = require('q');
 
 const credito = {};
@@ -21,9 +21,9 @@ credito.actualizarClientes = () => {
 credito.obtenerClientes = () => {
   const deferred = Q.defer();
   help.d$().query(`
-  SELECT E.IdERP AS Cliente, E.Credito 
-  FROM traEmpresas E 
-  WHERE E.Credito IS NOT NULL AND E.Activo = 1 
+  SELECT E.IdERP AS Cliente, E.Credito
+  FROM traEmpresas E
+  WHERE E.Credito IS NOT NULL AND E.Activo = 1
   ORDER BY E.IdERP;`, [])
     .catch(error => deferred.reject(error))
     .done(result => deferred.resolve(result));

@@ -1,4 +1,4 @@
-const requestPromise = require('request-promise');
+const { requestPromise } = require('../../../helpers/logged-request');
 const config = require('../../../config');
 
 const insertOrderDetail = (orderDetail) => {
