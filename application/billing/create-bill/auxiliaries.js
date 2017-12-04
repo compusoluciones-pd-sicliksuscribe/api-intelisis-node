@@ -59,7 +59,8 @@ class Auxiliaries {
             // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
             return ++count;
           });
-      }, 0).then(() => this.insertRP(orderDetails.data[0].ID, orderDetails.data[0].IdPedido));
+      }, 0);
+      // .then(() => this.insertRP(orderDetails.data[0].ID, orderDetails.data[0].IdPedido)); // Actualizacion de CDFI 3.3, no se permiten RPs
   }
 
   insertRP(ID, IdPedido) {
