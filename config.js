@@ -40,6 +40,23 @@ module.exports = {
   //   debug: false,
   // }),
 
+  // //////////////////////////////////////////////////////////////////////////////////////////
+  // // PRUEBAS //////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////
+
+  // ApiErp: 'https://ws.compusoluciones.com/IntelisisPruebas/',
+  // // // ApiErp: 'http://localhost:54228/',
+  // AccessControlAllowOrigin: '*',
+  // connectionPool: mySqlModel.createPool({
+  //   connectionLimit: 10,
+  //   host: '10.3.102.70',
+  //   user: 'root',
+  //   password: 'Inn0vaci0n',
+  //   database: 'clicksuscribeTrial',
+  //   dateStrings: 'date',
+  //   debug: false,
+  // }),
+
   // Esta variable en mysql permite cambiar el número de conexiones y por lo tanto evita el error de "Too many conections"
   // SHOW VARIABLES LIKE "max_connections"
   // SET GLOBAL max_connections = 312

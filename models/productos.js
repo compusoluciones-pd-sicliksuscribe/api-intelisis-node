@@ -2,7 +2,7 @@
 
 const help = require('../helpers/help');
 const config = require('../config');
-const request = require('request');
+const { request } = require('../helpers/logged-request');
 const Q = require('q');
 
 const productos = {};
@@ -81,7 +81,7 @@ productos.valido = (producto) => {
   if (!producto.Visible) { valido = false; errores += 'el campo visible está vacio '; }
   if (!producto.IdProductoFabricante) { valido = false; errores += 'el id producto fabricante está vacio '; }
   if (producto.CantidadMinima >= producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es igual o mayor a la cantidad máxima '; }
-  if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else { 
+  if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else {
     deferred.resolve(help.r$(0, errores, producto)); }
   return deferred.promise;
 };

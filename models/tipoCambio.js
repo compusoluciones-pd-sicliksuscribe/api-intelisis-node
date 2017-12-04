@@ -2,7 +2,7 @@
 
 const help = require('../helpers/help');
 const config = require('../config');
-const request = require('request');
+const { request } = require('../helpers/logged-request');
 const Q = require('q');
 
 const tipoCambio = {};
