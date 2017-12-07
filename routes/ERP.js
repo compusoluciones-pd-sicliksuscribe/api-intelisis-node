@@ -33,8 +33,8 @@ router.get('/Actualizar', (request, response) => {
 
 router.post('/Credito', (request, response) => {
   credito.actualizarCredito(request.body.Cliente, request.body.Credito)
-    .catch(error => response.send(error))
-    .done(result => response.send(result));
+    .catch((error) => { response.send(error); })
+    .done((result) => { response.send(result); });
 });
 
 
