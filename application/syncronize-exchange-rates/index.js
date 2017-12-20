@@ -11,12 +11,12 @@ const defaultDependencies = {
 const getExchangeRateSyncronizer = (dependencies = defaultDependencies) => {
   const getLatestExchangeRates = () => getLatestExchangeRatesERP(dependencies.requestPromise);
 
-  const syncronizeExchangeRates = () => {
+  const syncronizeExchangeRates = () => (
     getLatestExchangeRates()
       .then(dependencies.exchangeRates.insert)
       .then(() => logger.info('Exchange Rate updated'))
-      .catch(error => logger.error(error));
-  };
+      .catch(error => logger.error(error))
+  );
 
   return ({
     getLatestExchangeRates,
