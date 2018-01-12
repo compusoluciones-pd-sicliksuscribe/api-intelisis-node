@@ -1,5 +1,10 @@
 module.exports = {
     "extends": "airbnb",
+    "env": {
+        "node": true,
+        "mocha": true
+    
+    },
     "rules": {
         "strict": "off",
         "prefer-template": "off",

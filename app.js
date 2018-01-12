@@ -37,6 +37,9 @@ app.use('/', routeERP);
 const billing = require('./api-routes/billing');
 app.use('/', billing);
 
+const exchangeRates = require('./api-routes/exchange-rates');
+app.use('/exchange-rates', exchangeRates);
+
 // Puerto que corre la API
 const port = process.env.PORT || 8088;
 app.listen(port);

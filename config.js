@@ -45,14 +45,14 @@ module.exports = {
   // ////////////////////////////////////////////////////////////////////////////////////////
 
   // ApiErp: 'https://ws.compusoluciones.com/IntelisisPruebas/',
-  // // // ApiErp: 'http://localhost:54228/',
+  // ApiErp: 'http://localhost:54228/',
   // AccessControlAllowOrigin: '*',
   // connectionPool: mySqlModel.createPool({
   //   connectionLimit: 10,
   //   host: '10.3.102.70',
   //   user: 'root',
   //   password: 'Inn0vaci0n',
-  //   database: 'clicksuscribeTrial',
+  //   database: 'clicksuscribe3430',
   //   dateStrings: 'date',
   //   debug: false,
   // }),
