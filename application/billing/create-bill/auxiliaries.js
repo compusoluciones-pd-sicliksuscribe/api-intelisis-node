@@ -3,7 +3,7 @@ const promiseFor = require('../../../helpers/promise-for');
 const validateCommission = orderDetails => {
   const products = orderDetails.data.filter(details => details.IdProducto !== 74);
   const commission = orderDetails.data.filter(details => details.IdProducto === 74)[0];
-  const totalWithoutCommission = products.map(product => product.Precio).reduce((acc, cur) => acc + cur);
+  const totalWithoutCommission = products.reduce((totalPrice, currentProduct) => totalPrice + currentProduct.Precio, 0);
   if (totalWithoutCommission > 0 && commission) products.push(commission);
   return products;
 };
