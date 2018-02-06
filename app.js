@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(expressLogger);
 app.use(expressConsoleLogger);
 // Inicializador de Jobs
-Jobs.start();
+// Jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
@@ -36,6 +36,8 @@ app.use('/', routeERP);
 
 const billing = require('./api-routes/billing');
 app.use('/', billing);
+const products = require('./api-routes/products');
+app.use('/', products);
 
 // Puerto que corre la API
 const port = process.env.PORT || 8088;

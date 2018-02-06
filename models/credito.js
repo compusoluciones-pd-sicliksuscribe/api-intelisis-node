@@ -44,11 +44,11 @@ credito.barrerClientes = (clientes) => {
 };
 
 // Actualiza el crédito de un cliente en el ERP
-credito.actualizarCredito = (cliente, credito) => {
+credito.actualizarCredito = (cliente, newCredit) => {
   const deferred = Q.defer();
   if (cliente) {
-    if (credito) {
-      request.post(config.ApiErp + 'Credito', { headers: { token: config.TokenERP }, form: { Cliente: cliente, Credito: credito } },
+    if (newCredit) {
+      request.post(config.ApiErp + 'Credito', { headers: { token: config.TokenERP }, form: { Cliente: cliente, Credito: newCredit } },
         (error, response, body) => {
           if (body) {
             const json = JSON.parse(body);
