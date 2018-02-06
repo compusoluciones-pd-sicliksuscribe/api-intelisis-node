@@ -1,6 +1,6 @@
 {
   "name": "erp-api",
-  "version": "1.0.0",
+  "version": "2.3.3",
   "description": "API que nos ayuda a conectarnos con nuestro ERP Intelisis.",
   "main": "app.js",
   "scripts": {
@@ -11,7 +11,6 @@
   "dependencies": {
     "bluebird": "^3.4.7",
     "body-parser": "^1.13.3",
-    "chai-as-promised": "^5.3.0",
     "cron": "^1.1.0",
     "crypto": "0.0.3",
     "express": "^4.13.3",
@@ -28,7 +27,8 @@
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",
-    "chai": "^3.5.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^3.5.0",
     "eslint-config-airbnb": "^11.1.0",
     "eslint-plugin-import": "^1.15.0",

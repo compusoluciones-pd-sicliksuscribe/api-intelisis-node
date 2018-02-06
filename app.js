@@ -39,6 +39,9 @@ app.use('/', billing);
 const products = require('./api-routes/products');
 app.use('/', products);
 
+const exchangeRates = require('./api-routes/exchange-rates');
+app.use('/exchange-rates', exchangeRates);
+
 // Puerto que corre la API
 const port = process.env.PORT || 8088;
 app.listen(port);

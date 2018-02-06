@@ -52,7 +52,7 @@ module.exports = {
   //   host: '10.3.102.70',
   //   user: 'root',
   //   password: 'Inn0vaci0n',
-  //   database: 'clicksuscribeAutodeskVer2',
+  //   database: 'clicksuscribe3430',
   //   dateStrings: 'date',
   //   debug: false,
   // }),
