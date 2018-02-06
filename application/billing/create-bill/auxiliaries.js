@@ -1,5 +1,12 @@
 const promiseFor = require('../../../helpers/promise-for');
 
+const validateCommission = orderDetails => {
+  const products = orderDetails.data.filter(details => details.IdProducto !== 74);
+  const commission = orderDetails.data.filter(details => details.IdProducto === 74)[0];
+  const totalWithoutCommission = products.reduce((totalPrice, currentProduct) => totalPrice + currentProduct.Precio, 0);
+  if (totalWithoutCommission > 0 && commission) products.push(commission);
+  return products;
+};
 class Auxiliaries {
   constructor(ordersData, intelisis, billingData) {
     this.ordersData = ordersData;
@@ -11,10 +18,11 @@ class Auxiliaries {
     if (ordersToBill.data.length > 0) {
       return promiseFor(count => count < ordersToBill.data.length,
         count => this.intelisis.getSale(ordersToBill.data[count].IdPedido)
-          .then((result) => {
-            if (JSON.parse(result).length > 0) {
+          .then(result => {
+            const response = JSON.parse(result);
+            if (response.length > 0) {
               return this.updateSalesId(JSON.parse(result)[0].ID, ordersToBill.data[count].IdPedido)
-                .then((res) => {
+                .then(() => {
                   // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
                   return ++count;
                 });
@@ -41,6 +49,7 @@ class Auxiliaries {
         const parsedBill = JSON.parse(bill);
         if (parsedBill.length > 0) {
           return this.billingData.selectPendingOrderDetail(parsedBill[0].ID, parsedBill[0].IdPedidoMarketPlace)
+            .then(validateCommission)
             .then(orderDetails => this.insertOrderDetails(orderDetails))
             .then(this.ordersData.patch({ Facturado: 1, IdFactura: parsedBill[0].ID }, parsedBill[0].IdPedidoMarketPlace))
             .then(detailResult => Promise.resolve(detailResult));
@@ -50,11 +59,11 @@ class Auxiliaries {
   }
 
   insertOrderDetails(orderDetails) {
-    return promiseFor(count => count < orderDetails.data.length,
+    return promiseFor(count => count < orderDetails.length,
       (count) => {
-        orderDetails.data[count].RenglonID = count + 1;
-        orderDetails.data[count].Renglon = (count + 1) * 2048;
-        return this.intelisis.insertOrderDetail(orderDetails.data[count])
+        orderDetails[count].RenglonID = count + 1;
+        orderDetails[count].Renglon = (count + 1) * 2048;
+        return this.intelisis.insertOrderDetail(orderDetails[count])
           .then((result) => {
             // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
             return ++count;

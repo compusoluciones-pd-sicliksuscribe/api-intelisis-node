@@ -6,6 +6,7 @@ module.exports = {
     
     },
     "rules": {
+        "arrow-parens": "off",
         "strict": "off",
         "prefer-template": "off",
         "no-param-reassign": "off",

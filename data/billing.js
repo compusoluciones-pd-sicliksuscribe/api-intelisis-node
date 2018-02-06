@@ -23,7 +23,7 @@ SELECT DISTINCT
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
-      ? AS ID, P.IdERP AS Articulo, PD.Cantidad, PD.IdPedido, 
+      ? AS ID, P.IdERP AS Articulo, PD.Cantidad, PD.IdPedido, PD.IdProducto,
       CASE 
         WHEN PD.MonedaPrecio = Ped.MonedaPago 
           THEN PD.PrecioUnitario 
@@ -32,9 +32,10 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
         WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos' 
           THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio 
     FROM traPedidoDetalles PD 
-    INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto 
+    INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido 
-    WHERE PD.IdPedido = ?;`,
+    WHERE PD.IdPedido = ?
+    AND PD.Activo = 1;`,
   [ID, IdPedido]);
 
 billing.selectRP = IdPedido => help.d$().query(`

@@ -36,6 +36,8 @@ app.use('/', routeERP);
 
 const billing = require('./api-routes/billing');
 app.use('/', billing);
+const products = require('./api-routes/products');
+app.use('/', products);
 
 const exchangeRates = require('./api-routes/exchange-rates');
 app.use('/exchange-rates', exchangeRates);
