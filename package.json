@@ -1,12 +1,12 @@
 {
   "name": "erp-api",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "API que nos ayuda a conectarnos con nuestro ERP Intelisis.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Rafael Flores Ramírez",
+  "author": "CompuSoluciones",
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.4.7",
