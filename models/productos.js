@@ -2,13 +2,15 @@ const { isNil } = require('ramda');
 
 const help = require('../helpers/help');
 const config = require('../config');
-const request = require('request');
+const { request } = require('../helpers/logged-request');
 const Q = require('q');
+const logger = require('../helpers/logger').debugLogger;
 
 const productos = {};
 
 // Obtener toda la lista de productos del ERP y los barre para meterlos en el marketplace
 productos.obtener = () => {
+  logger.info('Updating products');
   const deferred = Q.defer();
   request.get(config.ApiErp + 'Articulo', { headers: { token: config.TokenERP } }, (error, response, body) => {
     if (body) {
@@ -18,8 +20,10 @@ productos.obtener = () => {
         .done(result => deferred.resolve(result));
     } else {
       if (error) {
+        logger.error(error);
         deferred.reject(help.r$(0, error));
       } else {
+        logger.error('Unknown error while updating products');
         deferred.reject(help.r$(0, 'Error con el body al obtener los productos'));
       }
     }
@@ -53,6 +57,8 @@ productos.barrerProductos = productosERP => {
               Especializacion: r$.data.Especializacion,
               Activo: r$.data.Activo,
               Visible: r$.data.Visible,
+              ClaveProdServ: r$.data.ClaveProdServ,
+              ClaveUnidad: r$.data.ClaveUnidad,
             })
             .catch(error => deferred.reject(error))
             .done(result => deferred.resolve(result));
@@ -61,6 +67,7 @@ productos.barrerProductos = productosERP => {
     }
     deferred.resolve(help.r$(1, 'Productos actualizados'));
   } else { deferred.reject(help.r$(0, 'Sin productos que actualizar')); }
+  logger.info('finished updating products');
   return deferred.promise;
 };
 
@@ -79,7 +86,6 @@ productos.valido = producto => {
   if (producto.PrecioNormal <= 0) { valido = false; errores += 'el precio normal es igual o menor a 0'; }
   if (producto.MonedaPrecio.esVacio()) { valido = false; errores += 'la moneda precio está vacio '; }
   if (!producto.Activo) { valido = false; errores += 'el campo activo está vacio '; }
-  if (!producto.Visible) { valido = false; errores += 'el campo visible está vacio '; }
   if (!producto.IdProductoFabricante) { valido = false; errores += 'el id producto fabricante está vacio '; }
   if (producto.CantidadMinima >= producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es igual o mayor a la cantidad máxima '; }
   if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else {

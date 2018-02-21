@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const ERP = require('../models/ERP');
 const credito = require('../models/credito');
+const billing = require('../application/billing');
 
 /*
 https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#comments
@@ -36,5 +37,12 @@ router.post('/Credito', (request, response) => {
     .catch(error => response.send(error))
     .done(result => response.send(result));
 });
+
+router.get('/billAll', (request, response) => {
+  billing.createBilling.billAll()
+    .catch(error => response.send(error))
+    .then(result => response.send(result));
+});
+
 
 module.exports = router;

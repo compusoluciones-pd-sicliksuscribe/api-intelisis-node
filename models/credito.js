@@ -2,7 +2,7 @@
 
 const help = require('../helpers/help');
 const config = require('../config');
-const request = require('request');
+const { request } = require('../helpers/logged-request');
 const Q = require('q');
 
 const credito = {};
@@ -21,9 +21,9 @@ credito.actualizarClientes = () => {
 credito.obtenerClientes = () => {
   const deferred = Q.defer();
   help.d$().query(`
-  SELECT E.IdERP AS Cliente, E.Credito 
-  FROM traEmpresas E 
-  WHERE E.Credito IS NOT NULL AND E.Activo = 1 
+  SELECT E.IdERP AS Cliente, E.Credito
+  FROM traEmpresas E
+  WHERE E.Credito IS NOT NULL AND E.Activo = 1
   ORDER BY E.IdERP;`, [])
     .catch(error => deferred.reject(error))
     .done(result => deferred.resolve(result));
@@ -44,11 +44,11 @@ credito.barrerClientes = (clientes) => {
 };
 
 // Actualiza el crédito de un cliente en el ERP
-credito.actualizarCredito = (cliente, credito) => {
+credito.actualizarCredito = (cliente, newCredit) => {
   const deferred = Q.defer();
   if (cliente) {
-    if (credito) {
-      request.post(config.ApiErp + 'Credito', { headers: { token: config.TokenERP }, form: { Cliente: cliente, Credito: credito } },
+    if (newCredit) {
+      request.post(config.ApiErp + 'Credito', { headers: { token: config.TokenERP }, form: { Cliente: cliente, Credito: newCredit } },
         (error, response, body) => {
           if (body) {
             const json = JSON.parse(body);
