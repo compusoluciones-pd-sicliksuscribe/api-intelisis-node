@@ -87,7 +87,7 @@ productos.valido = producto => {
   if (producto.MonedaPrecio.esVacio()) { valido = false; errores += 'la moneda precio está vacio '; }
   if (!producto.Activo) { valido = false; errores += 'el campo activo está vacio '; }
   if (!producto.IdProductoFabricante) { valido = false; errores += 'el id producto fabricante está vacio '; }
-  if (producto.CantidadMinima >= producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es igual o mayor a la cantidad máxima '; }
+  if (producto.CantidadMinima > producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es mayor a la cantidad máxima '; }
   if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else {
     deferred.resolve(help.r$(0, errores, producto)); }
   return deferred.promise;
