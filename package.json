@@ -1,6 +1,6 @@
 {
   "name": "erp-api",
-  "version": "2.3.4",
+  "version": "2.4.0",
   "description": "API que nos ayuda a conectarnos con nuestro ERP Intelisis.",
   "main": "app.js",
   "scripts": {
