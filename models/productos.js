@@ -1,5 +1,5 @@
-'use strict';
-
+const { isNil } = require('ramda');
+const Promise = require('bluebird');
 const help = require('../helpers/help');
 const config = require('../config');
 const { request } = require('../helpers/logged-request');
@@ -32,14 +32,20 @@ productos.obtener = () => {
 };
 
 // Guarda los productos en el marketplace o lo actualiza si ya existe
-productos.barrerProductos = (productosERP) => {
+productos.barrerProductos = productosERP => {
   const deferred = Q.defer();
+  // fs.writeFileAsync('./productsResponse.json', JSON.stringify(productosERP), {}).then(() => console.log('done'), console.error);
   if (productosERP) {
     for (let i = 0; i < productosERP.length; i += 1) {
       if (productosERP[i].CantidadMinima === 0) { productosERP[i].CantidadMinima = 1; }
       if (productosERP[i].CantidadMaxima === 0) { productosERP[i].CantidadMaxima = 1000; }
-      productos.valido(productosERP[i]).then((r$) => {
+      productos.valido(productosERP[i]).then(r$ => {
         if (r$.success === 1) {
+          if (productosERP[i].IdTipoProducto === 6) {
+            productosERP[i].PrecioNormal = 0;
+            productosERP[i].CantidadMinima = 25;
+            productosERP[i].CantidadMaxima = 25;
+          }
           help.d$().callStoredProcedure('traProductos_insert',
             {
               IdERP: r$.data.IdERP,
@@ -72,7 +78,7 @@ productos.barrerProductos = (productosERP) => {
 };
 
 // Valido el producto antes de insertarlo en la base de datos
-productos.valido = (producto) => {
+productos.valido = producto => {
   const deferred = Q.defer();
   let valido = true;
   let errores = '';
@@ -81,14 +87,20 @@ productos.valido = (producto) => {
   if (producto.Nombre.esVacio()) { valido = false; errores += 'el nombre está vacio '; }
   if (!producto.Nombre.longitudValida()) { valido = false; errores += 'el nombre tiene longitud inválida '; }
   if (!producto.IdFabricante) { valido = false; errores += 'el id fabricante está vacio '; }
-  if (!producto.PrecioNormal) { valido = false; errores += 'el precio normal está vacio '; }
-  if (producto.MonedaPrecio.esVacio()) { valido = false; errores += 'la moneda precio está vacio '; }
   if (!producto.IdTipoProducto) { valido = false; errores += 'el id tipo producto está vacio '; }
+  if (isNil(producto.PrecioNormal)) { valido = false; errores += 'el precio normal está vacio '; }
+  if (producto.PrecioNormal <= 0) { valido = false; errores += 'el precio normal es igual o menor a 0'; }
+  if (producto.MonedaPrecio.esVacio()) { valido = false; errores += 'la moneda precio está vacio '; }
   if (!producto.Activo) { valido = false; errores += 'el campo activo está vacio '; }
   if (!producto.IdProductoFabricante) { valido = false; errores += 'el id producto fabricante está vacio '; }
-  if (producto.CantidadMinima >= producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es igual o mayor a la cantidad máxima '; }
-  if (valido) { deferred.resolve(help.r$(1, 'Producto valido', producto)); } else {
-    deferred.resolve(help.r$(0, errores, producto)); }
+  if (producto.CantidadMinima > producto.CantidadMaxima) { valido = false; errores += 'la cantidad mínima es mayor a la cantidad máxima '; }
+  if (valido) {
+    deferred.resolve(help.r$(1, 'Producto valido', producto));
+  } else {
+    logger.error(errores);
+    logger.error(producto);
+    deferred.resolve(help.r$(0, errores, producto));
+  }
   return deferred.promise;
 };
 

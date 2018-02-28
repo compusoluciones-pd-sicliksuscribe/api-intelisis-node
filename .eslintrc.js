@@ -12,7 +12,8 @@ module.exports = {
         "no-param-reassign": "off",
         "max-len": ["warn", 200, { "ignoreComments": true }],
         "linebreak-style":"off",
-        "import/newline-after-import":"off"
+        "import/newline-after-import":"off",
+        "arrow-parens": ["error", "as-needed"]
     }
 };
 
