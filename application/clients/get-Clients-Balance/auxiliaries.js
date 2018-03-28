@@ -12,7 +12,10 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
 
   const applyLastBalance = ({ Transferencia, IdERP }) => (
       enterprise.put({ Transferencia, IdERP })
-        .then(() => logger.info('Prepaid Balance Updated'))
+      .then(response => {
+        logger.info('Prepaid Balance Updated');
+        return response;
+      })
         .catch(error => logger.error(error))
     );
 
