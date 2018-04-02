@@ -10,7 +10,8 @@ billing.selectPendingOrdersToBill = () => help.d$().query(`
   CASE WHEN P.IdFabricante = 1 THEN P.FechaFin WHEN P.IdFabricante = 2 THEN contrato.FechaFin END AS Vencimiento,
   CASE WHEN P.IdFabricante = 1 THEN Distribuidor.AgenteMicrosoft WHEN P.IdFabricante = 2 THEN Distribuidor.AgenteAutodesk ELSE NULL END AS Agente
   FROM traPedidos P
-  LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato AND contrato.Activo = 1
+  LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
+  AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
   INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
   INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
   INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
