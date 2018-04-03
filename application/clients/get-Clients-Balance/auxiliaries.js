@@ -10,14 +10,17 @@ const defaultDependencies = {
 const getClientsBalance = (dependencies = defaultDependencies) => {
   const { enterprise } = dependencies;
 
-  const applyLastBalance = ({ Transferencia, IdERP }) => (
-      enterprise.put({ Transferencia, IdERP })
-      .then(response => {
+  const applyLastBalance = ({ transferencia, IdERP }) => (
+    enterprise.put({ transferencia, IdERP })
+      .then(() => {
         logger.info('Prepaid Balance Updated');
-        return response;
+        return {
+          success: 1,
+          message: 'Información actualizada.',
+          data: { transferencia, IdERP },
+        };
       })
-        .catch(error => logger.error(error))
-    );
+  );
 
     /*
     Ruta Api C# de Intelisis
@@ -35,7 +38,7 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
   const getLastBalancePrepaid = ({ id }) => {
     const requestOptions = getBalance(id);
     return requestPromise(requestOptions)
-      .then(Transferencia => ({ Transferencia, IdERP: id }));
+      .then(transferencia => ({ transferencia, IdERP: id }));
   };
 
   return {

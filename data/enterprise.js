@@ -2,6 +2,6 @@ const help = require('../helpers/help');
 
 const enterprise = {};
 
-enterprise.put = ({ Transferencia, IdERP }) => help.d$().update('traEmpresas', { Transferencia }, { IdERP });
+enterprise.put = ({ transferencia, IdERP }) => help.d$().update('traEmpresas', { transferencia }, { IdERP });
 
 module.exports = enterprise;
