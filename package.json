@@ -9,10 +9,12 @@
   "author": "CompuSoluciones",
   "license": "ISC",
   "dependencies": {
+    "@compusoluciones/csmysql-gateway": "^1.0.2",
     "bluebird": "^3.4.7",
     "body-parser": "^1.13.3",
     "cron": "^1.1.0",
     "crypto": "0.0.3",
+    "dotenv": "^5.0.1",
     "express": "^4.13.3",
     "express-winston-2": "^0.0.2",
     "favicon": "0.0.2",

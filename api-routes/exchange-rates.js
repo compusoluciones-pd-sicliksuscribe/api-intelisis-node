@@ -9,4 +9,10 @@ router.put('/syncronization', (req, res) => {
     .catch(error => res.send(error));
 });
 
+router.get('/', (req, res) => {
+  exchangeRatesSyncronizer.getLatestExchangeRates()
+  .then(response =>  res.send(response))
+  .catch(error => res.send(error));
+});
+
 module.exports = router;

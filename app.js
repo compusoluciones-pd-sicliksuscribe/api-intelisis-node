@@ -8,6 +8,16 @@ const Jobs = require('./models/jobs');
 const expressLogger = require('./helpers/logger').expressLogger;
 const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
 const logger = require('./helpers/logger').debugLogger;
+const dotenv = require('dotenv');
+
+const loadEnvVariables = () => {
+  const result = dotenv.config({ path: './configs/.envDev' });
+  if (result.error) throw new Error(result.error);
+};
+
+if (!(process.env.PRODUCTION || process.env.STAGING)) {
+  loadEnvVariables();
+}
 
 // url enconded y el parser con el formato json
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -41,6 +51,9 @@ app.use('/', products);
 
 const exchangeRates = require('./api-routes/exchange-rates');
 app.use('/exchange-rates', exchangeRates);
+
+const enterprises = require('./api-routes/enterprises');
+app.use('/enterprises', enterprises);
 
 // Puerto que corre la API
 const port = process.env.PORT || 8088;
