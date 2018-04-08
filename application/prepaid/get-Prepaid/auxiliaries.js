@@ -11,14 +11,6 @@ const getClientsPrepaidBalance = (dependencies = defaultDependencies) => {
 
   const applyLastBalancePrepaid = resultRequest => Promise.all(
     resultRequest.map(({ Saldo, Cliente }) => enterprise.put({ transferencia: Saldo, IdERP: Cliente }))
-    // .then(() => {
-    //   logger.info('La información ha sido actualizada.');
-    //   return {
-    //     success: 1,
-    //     message: 'Información Actualizada.',
-    //     data: { resultRequest },
-    //   };
-    // })
   );
 
   const getOptions = () => ({
