@@ -1,5 +1,6 @@
 const applyOrderPrepaid = require('../intelisis/bill-prepaids/create-order');
 const applyOrderDetailsPrepaid = require('../intelisis/bill-prepaids/create-order-details');
+const affectOrderPrepaidIntelisis = require('../intelisis/bill-prepaids/affect-order');
 
 const extractOrderDetailsById = (erpResponse, orders) => {
   const id = erpResponse[0].ID;
@@ -9,12 +10,14 @@ const extractOrderDetailsById = (erpResponse, orders) => {
     const detailWithId = Object.assign({}, detail, { ID: id, renglon, renglonId });
     return applyOrderDetailsPrepaid(detailWithId);
   });
-  return Promise.all(updateDetails);
+  return Promise.all(updateDetails)
+  .then(() => id);
 };
 
 const extractDetailsById = orders => (
   applyOrderPrepaid(orders)
   .then(erpResponse => extractOrderDetailsById(erpResponse, orders))
+  .then(billId => affectOrderPrepaidIntelisis(billId))
 );
 
 const billPrepaids = orders => (
