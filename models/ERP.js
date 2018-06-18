@@ -6,6 +6,7 @@ const productos = require('./productos');
 
 const billing = require('../application/billing');
 const exchangeRate = require('../application/syncronize-exchange-rates')();
+const getPrepaid = require('../application/prepaid/get-Prepaid');
 
 const ERP = {};
 
@@ -17,6 +18,7 @@ ERP.actualizar = () => (
     .then(credito.actualizarClientes)
     .then(distribuidores.obtener)
     .then(productos.obtener)
+    .then(getPrepaid)
     .then(() => help.r$(1, 'ERP Actualizado'))
 );
 

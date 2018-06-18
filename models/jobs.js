@@ -17,7 +17,7 @@ run.start = () => {
         return result;
       })
       .catch(logger.error);
-  }, null, true, null);
+  }, null, true, null, null, true);
 };
 
 module.exports = run;

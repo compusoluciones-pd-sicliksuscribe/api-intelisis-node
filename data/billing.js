@@ -19,7 +19,8 @@ billing.selectPendingOrdersToBill = () => help.d$().query(`
   INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto 
   WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
   AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
-  AND CASE WHEN P.IdFabricante = 1 THEN P.FechaFin IS NOT NULL WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL END
+  AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
+  AND P.IdFormaPago != 4
   AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
   WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
   END;
