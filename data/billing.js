@@ -7,8 +7,8 @@ billing.selectPendingOrdersToBill = () => help.d$().query(`
   P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
   fn_CalcularTotalPedido(P.IdPedido) AS Total, 
   fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
-  CASE WHEN P.IdFabricante = 1 THEN P.FechaFin WHEN P.IdFabricante = 2 THEN contrato.FechaFin END AS Vencimiento,
-  CASE WHEN P.IdFabricante = 1 THEN Distribuidor.AgenteMicrosoft WHEN P.IdFabricante = 2 THEN Distribuidor.AgenteAutodesk ELSE NULL END AS Agente
+  IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
+  IF (P.IdFabricante = 2, Distribuidor.AgenteAutodesk, Distribuidor.AgenteMicrosoft) AS Agente
   FROM traPedidos P
   LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
   AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END

@@ -23,8 +23,8 @@ facturas.obtenerPendientes = () => help.d$().query(`
   P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago,
   fn_CalcularTotalPedido(P.IdPedido) AS Total,
   fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
-  CASE WHEN P.IdFabricante = 1 THEN P.FechaFin WHEN P.IdFabricante = 2 THEN contrato.FechaFin END AS Vencimiento,
-  CASE WHEN P.IdFabricante = 1 THEN Distribuidor.AgenteMicrosoft WHEN P.IdFabricante = 2 THEN Distribuidor.AgenteAutodesk ELSE NULL END AS Agente
+  IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
+  IF (P.IdFabricante = 2, Distribuidor.AgenteAutodesk, Distribuidor.AgenteMicrosoft) AS Agente
   FROM traPedidos P
   LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato AND contrato.Activo = 1
   INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
@@ -34,15 +34,16 @@ facturas.obtenerPendientes = () => help.d$().query(`
   INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto AND Pro.IdTipoProducto != 3
   WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
   AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
-  AND CASE WHEN P.IdFabricante = 1 THEN P.FechaFin IS NOT NULL WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL END;`);
+  AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END;
+`);
 
 facturas.obtenerBajoConsumoPendientes = () => help.d$().query(`
   SELECT DISTINCT
-    P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago,
-    fn_CalcularTotalPedido(P.IdPedido) AS Total,
-    fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
-    CASE WHEN P.IdFabricante = 1 THEN P.FechaFin WHEN P.IdFabricante = 2 THEN contrato.FechaFin END AS Vencimiento,
-    CASE WHEN P.IdFabricante = 1 THEN Distribuidor.AgenteMicrosoft WHEN P.IdFabricante = 2 THEN Distribuidor.AgenteAutodesk ELSE NULL END AS Agente
+  P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago,
+  fn_CalcularTotalPedido(P.IdPedido) AS Total,
+  fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
+  IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
+  IF (P.IdFabricante = 2, Distribuidor.AgenteAutodesk, Distribuidor.AgenteMicrosoft) AS Agente
   FROM traPedidos P
   LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato AND contrato.Activo = 1
   INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
@@ -52,7 +53,8 @@ facturas.obtenerBajoConsumoPendientes = () => help.d$().query(`
   INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto AND Pro.IdTipoProducto = 3
   WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
   AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL AND P.FechaFin IS NOT NULL
-  AND P.FechaFin <= DATE(NOW());`);
+  AND P.FechaFin <= DATE(NOW());
+`);
 
 // Barrer pedidos pendientes de facturar y mandarlos a facturar
 facturas.barrerPedidos = (pedidos) => {
