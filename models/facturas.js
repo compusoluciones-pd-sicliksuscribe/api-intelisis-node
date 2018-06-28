@@ -32,7 +32,7 @@ facturas.obtenerPendientes = () => help.d$().query(`
   INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante
   INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
   INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto AND Pro.IdTipoProducto != 3
-  WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
+  WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
   AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
   AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END;
 `);
@@ -51,7 +51,7 @@ facturas.obtenerBajoConsumoPendientes = () => help.d$().query(`
   INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante
   INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
   INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto AND Pro.IdTipoProducto = 3
-  WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
+  WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
   AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL AND P.FechaFin IS NOT NULL
   AND P.FechaFin <= DATE(NOW());
 `);
