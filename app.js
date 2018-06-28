@@ -42,6 +42,12 @@ app.use('/', products);
 const exchangeRates = require('./api-routes/exchange-rates');
 app.use('/exchange-rates', exchangeRates);
 
+const clientsBalance = require('./api-routes/clients-balance');
+app.use('/', clientsBalance);
+
+const prepaidOrderBalance = require('./api-routes/bill-prepaids');
+app.use('/', prepaidOrderBalance);
+
 // Puerto que corre la API
 const port = process.env.PORT || 8088;
 app.listen(port);
