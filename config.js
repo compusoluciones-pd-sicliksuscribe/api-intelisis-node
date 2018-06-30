@@ -52,7 +52,7 @@ module.exports = {
     host: '10.3.102.70',
     user: 'root',
     password: 'Inn0vaci0n',
-    database: 'tuClickDev',
+    database: 'click-issue-comision',
     dateStrings: 'date',
     debug: false,
   }),
