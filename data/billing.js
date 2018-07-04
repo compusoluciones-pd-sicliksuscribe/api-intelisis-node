@@ -1,4 +1,5 @@
 const help = require('../helpers/help');
+const { IdProductoComisionTuClick } = require('../config');
 
 const billing = {};
 
@@ -39,8 +40,8 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     FROM traPedidoDetalles PD 
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido 
-    WHERE PD.IdPedido = ?;`,
-  [ID, IdPedido]);
+    WHERE PD.IdPedido = ? AND P.IdProducto <> ?;`,
+  [ID, IdPedido, IdProductoComisionTuClick]);
 
 billing.selectRP = IdPedido => help.d$().query(`
      SELECT IFNULL(TipoCambioRP, 0 ) AS TipoCambioRP FROM traPedidos P 
