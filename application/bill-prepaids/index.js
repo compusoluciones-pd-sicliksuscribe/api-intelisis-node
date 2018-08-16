@@ -17,7 +17,7 @@ const extractOrderDetailsById = (erpResponse, orders) => {
 const extractDetailsById = orders => (
   applyOrderPrepaid(orders)
   .then(erpResponse => extractOrderDetailsById(erpResponse, orders))
-  .then(billId => affectOrderPrepaidIntelisis(billId))
+  .then(billId => affectOrderPrepaidIntelisis(billId, orders))
 );
 
 const billPrepaids = orders => (

@@ -1,8 +1,8 @@
 const auxiliaries = require('./auxiliaries');
 const { affectOrderIntelisis } = auxiliaries();
 
-const affectOrderPrepaidIntelisis = params => (
-    affectOrderIntelisis(params)
+const affectOrderPrepaidIntelisis = (params, order) => (
+    affectOrderIntelisis(params, order)
 );
 
 module.exports = affectOrderPrepaidIntelisis;

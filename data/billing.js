@@ -50,4 +50,9 @@ billing.selectRP = IdPedido => help.d$().query(`
     WHERE PD.IdPedido = ? AND PD.Activo = 1 LIMIT 1`,
   [IdPedido]);
 
+billing.putResponseBilling = (ID, IdPedido) => help.d$().query(`
+  UPDATE traPedidos SET Facturado = 1, IdFactura = ?, IdEstatusPedido = 3
+  WHERE IdPedido = ?`,
+[ID, IdPedido]);
+
 module.exports = billing;

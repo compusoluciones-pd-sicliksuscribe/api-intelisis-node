@@ -1,5 +1,6 @@
 const { requestPromise } = require('../../../../helpers/logged-request');
 const config = require('../../../../config');
+const throwCustomError = require('../../../../helpers/factories/errorFactory');
 
 const applyClientsBalanceDetails = () => {
   const mapOrderDetailsParameters = orderDetail => ({
@@ -23,7 +24,8 @@ const applyClientsBalanceDetails = () => {
 
   const applyOrderDetailsBalance = orderDetail => {
     const requestOptions = getOptions(orderDetail);
-    return requestPromise(requestOptions);
+    return requestPromise(requestOptions)
+      .catch(error => throwCustomError(`Error al generar las partidas ${error}`));
   };
 
   return {
