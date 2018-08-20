@@ -5,9 +5,9 @@ const affectOrderPrepaidIntelisis = require('../intelisis/bill-prepaids/affect-o
 const extractOrderDetailsById = (erpResponse, orders) => {
   const id = erpResponse[0].ID;
   const updateDetails = orders.detalles.map((detail, index) => {
-    const renglonId = index + 1;
-    const renglon = renglonId * 2048;
-    const detailWithId = Object.assign({}, detail, { ID: id, renglon, renglonId });
+    // const renglonId = null;
+    // const renglon = renglonId * 2048;
+    const detailWithId = Object.assign({}, detail, { ID: id });
     return applyOrderDetailsPrepaid(detailWithId);
   });
   return Promise.all(updateDetails)

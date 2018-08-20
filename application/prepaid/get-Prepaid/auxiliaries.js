@@ -15,7 +15,7 @@ const getClientsPrepaidBalance = (dependencies = defaultDependencies) => {
 
   const getOptions = () => ({
     method: 'GET',
-    uri: `${config.ApiErp}/Prepaids`,
+    uri: `${config.ApiErp}Prepaids`,
     headers: {
       token: config.TokenERP,
     },

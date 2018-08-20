@@ -20,7 +20,7 @@ const applyClientsBalance = () => {
 
   const getOptions = orders => ({
     method: 'POST',
-    uri: `${config.ApiErp}/Pedido`,
+    uri: `${config.ApiErp}Pedido`,
     body: mapOrderParameters(orders),
     headers: {
       token: config.TokenERP,
