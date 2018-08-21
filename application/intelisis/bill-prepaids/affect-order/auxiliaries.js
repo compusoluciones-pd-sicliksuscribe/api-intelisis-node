@@ -4,9 +4,9 @@ const { putResponseBilling } = require('../../../../data/billing');
 const throwCustomError = require('../../../../helpers/factories/errorFactory');
 
 const processBillRequest = async (billResponse, { IdPedido }) => {
-  const { oResultado, ID } = billResponse[0];
+  const { oResultado } = billResponse[0];
   if (oResultado.Success) {
-    return putResponseBilling(ID, IdPedido);
+    return putResponseBilling(oResultado.Dato, IdPedido);
   }
   return throwCustomError(`Error al afectar el pedido ${IdPedido}`);
 };
