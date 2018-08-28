@@ -22,9 +22,18 @@ const applyClientsBalanceDetails = () => {
     json: true,
   });
 
+  const processResponse = response => {
+    const { oResultado, Message } = response[0];
+    if (!oResultado.Success) {
+      return throwCustomError(Message);
+    }
+    return response;
+  };
+
   const applyOrderDetailsBalance = orderDetail => {
     const requestOptions = getOptions(orderDetail);
     return requestPromise(requestOptions)
+      .then(processResponse)
       .catch(error => throwCustomError(`Error al generar las partidas ${error}`));
   };
 
