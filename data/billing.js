@@ -51,7 +51,7 @@ billing.selectRP = IdPedido => help.d$().query(`
   [IdPedido]);
 
 billing.putResponseBilling = (ID, IdPedido) => help.d$().query(`
-  UPDATE traPedidos SET Facturado = 1, IdFactura = ?, IdEstatusPedido = 3
+  UPDATE traPedidos SET Facturado = 1, IdFactura = ?, IdEstatusPedido = 2
   WHERE IdPedido = ?`,
 [ID, IdPedido]);
 

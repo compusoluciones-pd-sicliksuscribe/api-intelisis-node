@@ -11,7 +11,7 @@ const processBillRequest = async (billResponse, { IdPedido }) => {
   return throwCustomError(`Error al afectar el pedido ${IdPedido}`);
 };
 
-const applyaffectOrder = () => {
+const applyAffectOrder = () => {
   const mapOrderParameters = billId => ({
     ID: billId,
   });
@@ -37,4 +37,4 @@ const applyaffectOrder = () => {
   };
 };
 
-module.exports = applyaffectOrder;
+module.exports = applyAffectOrder;
