@@ -1,5 +1,6 @@
 const { requestPromise } = require('../../../../helpers/logged-request');
 const config = require('../../../../config');
+const throwCustomError = require('../../../../helpers/factories/errorFactory');
 
 const applyClientsBalance = () => {
   const mapOrderParameters = orders => ({
@@ -19,7 +20,7 @@ const applyClientsBalance = () => {
 
   const getOptions = orders => ({
     method: 'POST',
-    uri: `${config.ApiErp}/Pedido`,
+    uri: `${config.ApiErp}Pedido`,
     body: mapOrderParameters(orders),
     headers: {
       token: config.TokenERP,
@@ -29,7 +30,8 @@ const applyClientsBalance = () => {
 
   const applyOrderBalance = orders => {
     const requestOptions = getOptions(orders);
-    return requestPromise(requestOptions);
+    return requestPromise(requestOptions)
+      .catch(error => throwCustomError(`Error al generar el pedido en intelisis ${error}`));
   };
 
   return {

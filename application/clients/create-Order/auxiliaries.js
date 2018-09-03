@@ -19,7 +19,7 @@ const createOrder = params => {
 
   const createDataOrder = () => ({
     method: 'POST',
-    uri: `${config.ApiErp}/Pedido`,
+    uri: `${config.ApiErp}Pedido`,
     form: parameters,
     headers: {
       token: config.TokenERP,

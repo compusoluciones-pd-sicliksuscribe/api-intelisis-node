@@ -1,5 +1,6 @@
 const { requestPromise } = require('../../../../helpers/logged-request');
 const config = require('../../../../config');
+const throwCustomError = require('../../../../helpers/factories/errorFactory');
 
 const applyClientsBalanceDetails = () => {
   const mapOrderDetailsParameters = orderDetail => ({
@@ -13,7 +14,7 @@ const applyClientsBalanceDetails = () => {
 
   const getOptions = orderDetail => ({
     method: 'POST',
-    uri: `${config.ApiErp}/PedidoD`,
+    uri: `${config.ApiErp}PedidoD`,
     body: mapOrderDetailsParameters(orderDetail),
     headers: {
       token: config.TokenERP,
@@ -21,9 +22,19 @@ const applyClientsBalanceDetails = () => {
     json: true,
   });
 
+  const processResponse = response => {
+    const { oResultado, Message } = response[0];
+    if (!oResultado.Success) {
+      return throwCustomError(Message);
+    }
+    return response;
+  };
+
   const applyOrderDetailsBalance = orderDetail => {
     const requestOptions = getOptions(orderDetail);
-    return requestPromise(requestOptions);
+    return requestPromise(requestOptions)
+      .then(processResponse)
+      .catch(error => throwCustomError(`Error al generar las partidas ${error}`));
   };
 
   return {
