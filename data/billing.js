@@ -29,7 +29,11 @@ billing.selectPendingOrdersToBill = () => help.d$().query(`
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
-      ? AS ID, P.IdERP AS Articulo, PD.Cantidad, PD.IdPedido, PD.IdProducto,
+      ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
+      CASE WHEN P.IdFabricante = 5 
+      THEN 1
+      ELSE PD.Cantidad 
+    END AS Cantidad,
       CASE 
         WHEN PD.MonedaPrecio = Ped.MonedaPago 
           THEN PD.PrecioUnitario 
