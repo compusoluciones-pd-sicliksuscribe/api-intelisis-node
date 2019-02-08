@@ -52,7 +52,7 @@ module.exports = {
     host: '10.3.102.70',
     user: 'root',
     password: 'Inn0vaci0n',
-    database: 'clicksuscribe',
+    database: 'clickEnero',
     dateStrings: 'date',
     debug: false,
   }),
