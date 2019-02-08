@@ -1,7 +1,7 @@
 const { requestPromise } = require('../../../helpers/logged-request');
 const config = require('../../../config');
 
-const insertOrderDetail = (orderDetail) => {
+const insertOrderDetail = orderDetail => {
   const params = {
     ID: orderDetail.ID,
     Articulo: orderDetail.Articulo,

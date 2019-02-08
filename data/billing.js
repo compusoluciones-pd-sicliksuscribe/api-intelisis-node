@@ -64,4 +64,30 @@ billing.putResponseBilling = (ID, IdPedido) => help.d$().query(`
   WHERE IdPedido = ?`,
 [ID, IdPedido]);
 
+billing.getBillData = IdPedido => help.d$().query(`
+SELECT DISTINCT
+P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, Distribuidor.NombreEmpresa AS Proyecto,TPP.IdPedidoPadre, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
+fn_CalcularTotalPedido(P.IdPedido) AS Total, 
+fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
+IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
+(CASE
+  WHEN (P.IdFabricante = 2 AND TPP.IdPedidoPadre IS NOT NULL) THEN Distribuidor.AgenteAutodeskRenovacion
+  WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
+  WHEN (P.IdFabricante = 9 ) THEN 'JORGONZA'
+  ELSE Distribuidor.AgenteMicrosoft
+END) as Agente
+FROM traPedidos P
+LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
+AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
+INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
+INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
+INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
+INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
+LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
+WHERE P.IdPedido = ? AND P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
+AND Distribuidor.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
+AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
+AND P.IdFormaPago != 4;
+  `, [IdPedido]);
+
 module.exports = billing;
