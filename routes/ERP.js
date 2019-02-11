@@ -5,6 +5,7 @@ const router = express.Router();
 const ERP = require('../models/ERP');
 const credito = require('../models/credito');
 const billing = require('../application/billing');
+const billingOrder = require('../application/billOrder/create-bill');
 
 /*
 https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#comments
@@ -42,6 +43,12 @@ router.get('/billAll', (request, response) => {
   billing.createBilling.billAll()
     .catch(error => response.send(error))
     .then(result => response.send(result));
+});
+
+router.post('/billOrder', (request, response) => {
+  billingOrder(request.body.IdPedido)
+    .then(result => response.send(result))
+    .catch(error => response.send(error));
 });
 
 
