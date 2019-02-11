@@ -5,7 +5,7 @@ const billing = {};
 
 billing.selectPendingOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
-P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto,TPP.IdPedidoPadre, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
+P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
 fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
@@ -22,7 +22,7 @@ INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuar
 INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
 INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
 INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
-INNER JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
+LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
 WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
 AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
 AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
@@ -66,7 +66,7 @@ billing.putResponseBilling = (ID, IdPedido) => help.d$().query(`
 
 billing.getBillData = IdPedido => help.d$().query(`
 SELECT DISTINCT
-P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, Distribuidor.NombreEmpresa AS Proyecto,TPP.IdPedidoPadre, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
+P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, Distribuidor.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
 fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
