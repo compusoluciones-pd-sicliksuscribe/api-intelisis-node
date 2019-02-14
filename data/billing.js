@@ -5,7 +5,7 @@ const billing = {};
 
 billing.selectPendingOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
-P.IdPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto,TPP.IdPedidoPadre, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
+P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito, UsuarioFinal.NombreEmpresa AS Proyecto,TPP.IdPedidoPadre, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
 fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
