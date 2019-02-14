@@ -15,7 +15,6 @@ class Auxiliaries {
   }
 
   bill(ordersToBill) {
-    // console.log('ordersTobill', ordersToBill);
     if (ordersToBill.data.length > 0) {
       return promiseFor(count => count < ordersToBill.data.length,
         count => this.intelisis.getSale(ordersToBill.data[count].IdPedido)
