@@ -14,11 +14,11 @@ const extractOrderDetailsById = (erpResponse, orders) => {
   .then(() => id);
 };
 
-const extractDetailsById = orders => (
-  applyOrderPrepaid(orders)
+const extractDetailsById = orders => {
+  return applyOrderPrepaid(orders) //primera ronda
   .then(erpResponse => extractOrderDetailsById(erpResponse, orders))
-  .then(billId => affectOrderPrepaidIntelisis(billId, orders))
-);
+  .then(billId => affectOrderPrepaidIntelisis(billId, orders));
+};
 
 const billPrepaids = orders => (
 extractDetailsById(orders)
