@@ -1,7 +1,7 @@
 const { requestPromise } = require('../../../helpers/logged-request');
 const config = require('../../../config');
 
-const createSale = (params) => {
+const createSale = params => {
   const parameters = {
     Cliente: params.Cliente,
     Total: params.Total,
@@ -15,6 +15,7 @@ const createSale = (params) => {
     Proyecto: params.Proyecto,
     Vencimiento: params.Vencimiento,
     Agente: params.Agente,
+    IdPrimerPedido: params.IdPrimerPedido, // credito
   };
 
   const options = {

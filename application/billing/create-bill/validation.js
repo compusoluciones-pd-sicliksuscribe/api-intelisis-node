@@ -3,6 +3,7 @@ const help = require('../../../helpers/help');
 
 const billSchema = Joi.object().keys({
   IdPedido: Joi.required(),
+  IdPrimerPedido: Joi.required(),
   Cliente: Joi.required(),
   Proyecto: Joi.required(),
   UEN: Joi.required(),
