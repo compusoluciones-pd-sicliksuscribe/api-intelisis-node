@@ -54,16 +54,14 @@ credito.actualizarCredito = (cliente, newCredit) => {
             const json = JSON.parse(body);
             if (json) {
               if (json[0].Success === false) {
-                deferred.resolve(help.r$(0, json[0].Message, json[0].Dato));
-              } else {
-                deferred.resolve(help.r$(1, json[0].Message, json[0].Dato));
+                // deferred.resolve(help.r$(0, json[0].Message, json[0].Dato));
+                return json;
               }
+              deferred.resolve(help.r$(1, json[0].Message, json[0].Dato));
             } else {
               deferred.reject(help.r$(0, 'No se regresa información al actualizar el crédito del cliente'));
             }
-          } else {
-            if (error) { deferred.reject(help.r$(0, error)); } else { deferred.reject(help.r$(0, 'Error con el body', body)); }
-          }
+          } else if (error) { deferred.reject(help.r$(0, error)); } else { deferred.reject(help.r$(0, 'Error con el body', body)); }
         });
     } else { deferred.reject(help.r$(0, 'No hay crédito a actualizar')); }
   } else { deferred.reject(help.r$(0, 'No hay cliente a actualizar')); }
