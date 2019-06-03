@@ -1,4 +1,5 @@
 const promiseFor = require('../../../helpers/promise-for');
+const { sendNotificationErrorInsertOrder, sendNotificationErrorInsertOrderDatails } = require('../../emails/');
 
 const validateCommission = orderDetails => {
   const products = orderDetails.data.filter(details => details.IdProducto !== 74);
@@ -27,11 +28,15 @@ class Auxiliaries {
                   return ++count;
                 });
             }
+
             return this.insertIntelisis(ordersToBill.data[count])
-              .then((insertResult) => {
-                // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
-                return ++count;
-              });
+            .then((result) => {
+              if (result !== 1) {
+                sendNotificationErrorInsertOrder(ordersToBill.data[count]);
+              }
+
+              return ++count;
+            });
           })
         , 0).then(() => 'Ordenes facturadas');
     }
@@ -65,7 +70,10 @@ class Auxiliaries {
         orderDetails[count].Renglon = (count + 1) * 2048;
         return this.intelisis.insertOrderDetail(orderDetails[count])
           .then((result) => {
-            // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
+            if (result.oResultado.Success !== true) {
+              sendNotificationErrorInsertOrderDatails(orderDetails[count]);
+            }
+
             return ++count;
           });
       }, 0);
