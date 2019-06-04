@@ -2,6 +2,7 @@ const config = require('../../../config');
 const { requestPromise } = require('../../../helpers/logged-request');
 const enterpriseData = require('../../../data/enterprise');
 const logger = require('../../../helpers/logger').debugLogger;
+const throwCustomError = require('../../../helpers/factories/errorFactory');
 
 const defaultDependencies = {
   enterprise: enterpriseData,
@@ -11,7 +12,7 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
   const { enterprise } = dependencies;
 
   const applyLastBalance = async ({ transferencia, IdERP, moneda }) => {
-    if (moneda === 'Dolares') {
+    if (moneda === 'Dólares') {
       return enterprise.updateTransferenciaDolares(transferencia, IdERP)
       .then(() => {
         logger.info('Prepaid Balance Updated');
@@ -21,8 +22,8 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
           data: { transferencia, IdERP },
         };
       });
-    }
-    return enterprise.put({ transferencia, IdERP })
+    } else if (moneda === 'Pesos') {
+      return enterprise.put({ transferencia, IdERP })
       .then(() => {
         logger.info('Prepaid Balance Updated');
         return {
@@ -31,6 +32,8 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
           data: { transferencia, IdERP },
         };
       });
+    }
+    return throwCustomError('Moneda no válida');
   };
 
     /*
