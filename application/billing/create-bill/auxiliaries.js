@@ -1,97 +1,67 @@
-const promiseFor = require('../../../helpers/promise-for');
-const { sendNotificationErrorInsertOrder, sendNotificationErrorInsertOrderDatails } = require('../../emails/');
-
-const validateCommission = orderDetails => {
-  const products = orderDetails.data.filter(details => details.IdProducto !== 74);
-  const commission = orderDetails.data.filter(details => details.IdProducto === 74)[0];
-  const totalWithoutCommission = products.reduce((totalPrice, currentProduct) => totalPrice + currentProduct.Precio, 0);
-  if (totalWithoutCommission > 0 && commission) products.push(commission);
-  return products;
+const billingData = require('../../../data/billing');
+const intelisis = require('../../intelisis');
+const ordersData = require('../../../data/orders');
+const { sendNotificationErrorInsertOrder, sendNotificationErrorInsertOrderDetails } = require('../../emails/');
+const defaults = {
+  billing: billingData,
+  orders: ordersData,
 };
-class Auxiliaries {
-  constructor(ordersData, intelisis, billingData) {
-    this.ordersData = ordersData;
-    this.intelisis = intelisis;
-    this.billingData = billingData;
-  }
 
-  bill(ordersToBill) {
-    if (ordersToBill.data.length > 0) {
-      return promiseFor(count => count < ordersToBill.data.length,
-        count => this.intelisis.getSale(ordersToBill.data[count].IdPedido)
-          .then(result => {
-            const response = JSON.parse(result);
-            if (response.length > 0) {
-              return this.updateSalesId(JSON.parse(result)[0].ID, ordersToBill.data[count].IdPedido)
-                .then(() => {
-                  // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
-                  return ++count;
-                });
-            }
+const auxiliariesFactory = (dependencies = defaults) => {
+  const { billing, orders } = dependencies;
+  const {
+    selectPendingOrdersToBill, selectPendingOrderDetail,
+  } = billing;
 
-            return this.insertIntelisis(ordersToBill.data[count])
-            .then((result) => {
-              if (result !== 1) {
-                sendNotificationErrorInsertOrder(ordersToBill.data[count]);
-              }
+  const { patch } = orders;
 
-              return ++count;
-            });
-          })
-        , 0).then(() => 'Ordenes facturadas');
+  const auxiliaries = { };
+  auxiliaries.selectPendingOrders = () => selectPendingOrdersToBill();
+
+  const validateCommission = orderDetails => {
+    const products = orderDetails.data.filter(details => details.IdProducto !== 74);
+    const commission = orderDetails.data.filter(details => details.IdProducto === 74)[0];
+    const totalWithoutCommission = products.reduce((totalPrice, currentProduct) => totalPrice + currentProduct.Precio, 0);
+    if (totalWithoutCommission > 0 && commission) products.push(commission);
+    return products;
+  };
+
+  const verifyIfBillExist = order => intelisis.getSale(order.IdPedido);
+
+  const verifyResponse = (res, { IdPedido }) => {
+    const response = JSON.parse(res);
+    return response.length > 0 ? response : sendNotificationErrorInsertOrderDetails({ IdPedido });
+  };
+
+  const insertOrderDetails = orderDetails => Promise.all(orderDetails.map(async (detail, index) => {
+    detail.RenglonID = index + 1;
+    detail.Renglon = (index + 1) * 2048;
+    return intelisis.insertOrderDetail(detail)
+      .then(res => verifyResponse(res, detail));
+  }));
+
+  const billOrder = async order => {
+    const bill = await intelisis.createSale(order);
+    const parsedBill = JSON.parse(bill);
+    if (parsedBill.length > 0) {
+      return selectPendingOrderDetail(parsedBill[0].ID, parsedBill[0].IdPedidoMarketPlace)
+        .then(validateCommission)
+        .then(insertOrderDetails)
+        .then(patch({ Facturado: 1, IdFactura: parsedBill[0].ID }, parsedBill[0].IdPedidoMarketPlace));
     }
-    return Promise.resolve('No hay ordenes por facturar');
-  }
+    return sendNotificationErrorInsertOrder(order);
+  };
 
-  updateSalesId(ID, IdPedido) {
-    return this.ordersData.patch({ Facturado: 1, IdFactura: ID }, IdPedido)
-      .then(updateResult => updateResult);
-  }
+  const updateOrder = (ID, IdPedido) => patch({ Facturado: 1, IdFactura: ID }, IdPedido);
 
-  insertIntelisis(orderToBill) {
-    return this.intelisis.createSale(orderToBill)
-      .then((bill) => {
-        const parsedBill = JSON.parse(bill);
-        if (parsedBill.length > 0) {
-          return this.billingData.selectPendingOrderDetail(parsedBill[0].ID, parsedBill[0].IdPedidoMarketPlace)
-            .then(validateCommission)
-            .then(orderDetails => this.insertOrderDetails(orderDetails))
-            .then(this.ordersData.patch({ Facturado: 1, IdFactura: parsedBill[0].ID }, parsedBill[0].IdPedidoMarketPlace))
-            .then(detailResult => Promise.resolve(detailResult));
-        }
-        return Promise.reject('No se pudo crear la factura en intelisis');
-      });
-  }
+  auxiliaries.billOrders = ({ data }) =>
+    Promise.all(data.map(async order => {
+      const billExist = await verifyIfBillExist(order);
+      const response = JSON.parse(billExist);
+      return response.length > 0 ? updateOrder(response[0].ID, order.IdPedido) : billOrder(order);
+    }));
 
-  insertOrderDetails(orderDetails) {
-    return promiseFor(count => count < orderDetails.length,
-      (count) => {
-        orderDetails[count].RenglonID = count + 1;
-        orderDetails[count].Renglon = (count + 1) * 2048;
-        return this.intelisis.insertOrderDetail(orderDetails[count])
-          .then((result) => {
-            if (result.oResultado.Success !== true) {
-              sendNotificationErrorInsertOrderDatails(orderDetails[count]);
-            }
+  return auxiliaries;
+};
 
-            return ++count;
-          });
-      }, 0);
-      // .then(() => this.insertRP(orderDetails.data[0].ID, orderDetails.data[0].IdPedido)); // Actualizacion de CDFI 3.3, no se permiten RPs
-  }
-
-  insertRP(ID, IdPedido) {
-    return this.billingData.selectRP(IdPedido)
-      .then((RP) => {
-        const TipoCambioRP = RP.data[0].TipoCambioRP;
-        return this.intelisis.createRP(ID, TipoCambioRP)
-          .then((rpResult) => {
-            // cuando se refactorice, revisar el estatus del resultado y en caso de un error enviar correo, no se contemplo en la tarjeta
-            return rpResult;
-          });
-      });
-  }
-
-}
-
-module.exports = Auxiliaries;
+module.exports = auxiliariesFactory;

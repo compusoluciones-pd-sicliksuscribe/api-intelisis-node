@@ -27,7 +27,7 @@ emailTypes.NotificationErrorInsertOrder = (body, template) => {
   return getBaseMail(emailBody, template);
 };
 
-emailTypes.NotificationErrorInsertOrderDatails = (body, template) => {
+emailTypes.NotificationErrorInsertOrderDetails = (body, template) => {
   const emailBody = Object.assign({}, body);
   emailBody.address = ['mhernandez@compusoluciones.com'];
   emailBody.subject = 'API ClickSuscribe - Error al registrar detalles de factura';

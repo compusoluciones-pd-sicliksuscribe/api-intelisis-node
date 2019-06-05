@@ -7,8 +7,8 @@ emailService.sendNotificationErrorInsertOrder = body => {
   const email = emailFactory.buildEmail(body, 'NotificationErrorInsertOrder', template);
   emailer.send(email);
 };
-emailService.sendNotificationErrorInsertOrderDatails = body => {
-  const email = emailFactory.buildEmail(body, 'NotificationErrorInsertOrderDatails', template);
+emailService.sendNotificationErrorInsertOrderDetails = body => {
+  const email = emailFactory.buildEmail(body, 'NotificationErrorInsertOrderDetails', template);
   emailer.send(email);
 };
 

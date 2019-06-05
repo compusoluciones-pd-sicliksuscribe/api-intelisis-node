@@ -4,7 +4,7 @@ const router = express.Router();
 const billing = require('../application/billing');
 
 router.put('/bill-all', (req, res) => {
-  billing.createBilling.billAll()
+  billing.billOrders()
     .then(result => res.send(result))
     .catch(err => res.send(err));
 });

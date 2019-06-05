@@ -40,7 +40,7 @@ router.post('/Credito', (request, response) => {
 });
 
 router.get('/billAll', (request, response) => {
-  billing.createBilling.billAll()
+  billing.billOrders()
     .catch(error => response.send(error))
     .then(result => response.send(result));
 });
