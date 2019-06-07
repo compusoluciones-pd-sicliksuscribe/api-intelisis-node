@@ -15,6 +15,7 @@ const applyClientsBalance = () => {
     IdPedidoMarketPlace: orders.IdPedido,
     Referencia: orders.IdPedido,
     IdPrimerPedido: orders.IdPrimerPedido,
+    EsquemaRenovacion: orders.EsquemaRenovacion,
     Vencimiento: orders.Vencimiento,
     Agente: orders.Agente,
   });

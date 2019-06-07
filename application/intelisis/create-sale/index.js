@@ -16,6 +16,7 @@ const createSale = params => {
     Vencimiento: params.Vencimiento,
     Agente: params.Agente,
     IdPrimerPedido: params.IdPrimerPedido, // credito
+    EsquemaRenovacion: params.EsquemaRenovacion, // credito
   };
 
   const options = {

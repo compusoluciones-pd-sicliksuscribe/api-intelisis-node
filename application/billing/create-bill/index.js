@@ -1,18 +1,18 @@
-const Auxiliaries = require('./auxiliaries');
+const auxiliariesFactory = require('./auxiliaries');
 const validation = require('./validation');
+const logger = require('../../../helpers/logger').debugLogger;
 
-class CreateBilling {
-  constructor(billingData, ordersData, intelisis) {
-    this.billingData = billingData;
-    this.auxiliaries = new Auxiliaries(ordersData, intelisis, billingData);
-  }
+const {
+  billOrders, selectPendingOrders,
+} = auxiliariesFactory();
 
-  billAll() {
-    return this.billingData.selectPendingOrdersToBill()
+const billAllOrders = () =>
+  selectPendingOrders()
       .then(validation.validatePendingBills)
-      .then(validOrdersToBill => this.auxiliaries.bill(validOrdersToBill))
-      .then(billingResult => Promise.resolve(billingResult));
-  }
-}
+      .then(billOrders)
+      .then(ordersBilled => {
+        logger.info('Resultado', ordersBilled);
+        return 'Ordenes Facturadas';
+      });
 
-module.exports = CreateBilling;
+module.exports = billAllOrders;
