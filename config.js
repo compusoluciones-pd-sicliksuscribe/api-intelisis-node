@@ -13,6 +13,7 @@ module.exports = {
 
   // ApiErp: 'https://ws.compusoluciones.com/clicksuscribe/',
   // AccessControlAllowOrigin: '*',
+  // bccMailList: 'osestrad@compusoluciones.com; josedera@compusoluciones.com; kelizald@compusoluciones.com, mramos@compusoluciones.com, mhernandez@compusoluciones.com, rledezma@compusoluciones.com',
   // connectionPool: mySqlModel.createPool({
   //   connectionLimit: 15,
   //   host: 'gkrypton.ccnnrymipzih.us-east-1.rds.amazonaws.com',
@@ -31,7 +32,7 @@ module.exports = {
   ApiErp: 'http://localhost:54374/',
   AccessControlAllowOrigin: '*',
   environment: 'test',
-  bccMailList: 'mhernandez@compusoluciones.com; clicksuscribe@compusoluciones.com',
+  bccMailList: 'mhernandez@compusoluciones.com',
   connectionPool: mySqlModel.createPool({
     connectionLimit: 10,
     host: '10.3.102.70',
