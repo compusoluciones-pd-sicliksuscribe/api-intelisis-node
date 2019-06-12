@@ -4,7 +4,7 @@ const router = express.Router();
 const getBalancePrepaid = require('../application/clients');
 // const test = require('../application/prepaid');
 
-router.put('/clients-balance/:id', (req, res) => {
+router.put('/clients-balance/:id/moneda/:moneda', (req, res) => {
   getBalancePrepaid.clients(req.params)
     .then(response => res.send(response))
     .catch(error => res.send(error));
