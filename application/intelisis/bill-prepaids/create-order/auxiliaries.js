@@ -8,7 +8,7 @@ const applyClientsBalance = () => {
     Proyecto: orders.Proyecto,
     Total: orders.Total,
     IVA: orders.IVA,
-    Moneda: orders.MonedaPago,
+    Moneda: orders.MonedaPago === 'Dólares' ? 'Dolares' : orders.MonedaPago,
     TipoCambio: orders.TipoCambio,
     IdFormaPago: orders.IdFormaPago,
     UEN: orders.UEN,

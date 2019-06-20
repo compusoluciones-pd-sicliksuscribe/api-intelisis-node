@@ -12,7 +12,7 @@ const ERP = {};
 
 // Mando a llamar todas las funciones de este modelo y regreso promesa
 ERP.actualizar = () => (
-  billing.createBilling.billAll()
+  billing.billOrders()
     .then(pedidos.obtenerPagados)
     .then(exchangeRate.syncronizeExchangeRates)
     .then(credito.actualizarClientes)
