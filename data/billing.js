@@ -13,9 +13,12 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
 (CASE
   WHEN (P.IdFabricante = 2 AND TPP.IdPedidoPadre IS NOT NULL) THEN Distribuidor.AgenteAutodeskRenovacion
   WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
+  WHEN (P.IdFabricante = 10 ) THEN Distribuidor.AgenteAmazonRenovacion
   ELSE Distribuidor.AgenteMicrosoft
 END) as Agente,
-CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft' ELSE '' END AS EsquemaRenovacion
+CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
+     WHEN (P.IdFabricante = 10) THEN 'Cada día 3 del mes'
+ELSE '' END AS EsquemaRenovacion
 FROM traPedidos P
 LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
 AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
