@@ -1,5 +1,6 @@
 'use strict';
-
+const dotenv = require('dotenv');
+const argv = require('minimist')(process.argv.slice(2));
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -8,6 +9,23 @@ const Jobs = require('./models/jobs');
 const expressLogger = require('./helpers/logger').expressLogger;
 const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
 const logger = require('./helpers/logger').debugLogger;
+
+const loadEnvVariables = () => {
+  switch (argv.env) {
+    case 'development': dotenv.config({ path: './configs/.envDev' });
+      break;
+    case 'staging': dotenv.config({ path: './configs/.env.staging' });
+      break;
+    case 'production': dotenv.config({ path: './configs/.envProd' });
+      break;
+    default: throw 'Error al cargar el tipo de entorno';
+  }
+};
+
+if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
+  dotenv.config({ path: './configs/.envProd' });
+} else if (argv.env) loadEnvVariables();
+else dotenv.config({ path: './configs/.envDev' });
 
 // url enconded y el parser con el formato json
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,6 +70,7 @@ app.use('/', prepaidOrderBalance);
 const port = process.env.PORT || 8088;
 app.listen(port);
 
-logger.info('intelisis-api running local @ http://localhost:' + port);
+logger.info(`api-clicksuscribe running ${port}`);
+logger.info('environment:', process.env.ENVIRONMENT);
 
 module.exports = app;

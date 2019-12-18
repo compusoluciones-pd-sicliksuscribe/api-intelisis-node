@@ -1,6 +1,6 @@
 const emailTypes = { };
 const {
-  environment, bccMailList,
+  bccMailList,
 } = require('../../../config');
 
 const getBaseMail = (mailContent, template) => {
@@ -8,7 +8,7 @@ const getBaseMail = (mailContent, template) => {
     from: 'Click Suscribe CompuSoluciones <clicksuscribe@compusoluciones.com>',
     to: mailContent.address,
     bcc: bccMailList,
-    subject: `${environment === 'test' ? '[TEST] ' : ''}${mailContent.subject}`,
+    subject: `${process.env.ENVIRONMENT === 'development' ? '[TEST] ' : ''}${mailContent.subject}`,
     text: mailContent.subject,
     html: template(mailContent),
     watchHtml: template(mailContent),

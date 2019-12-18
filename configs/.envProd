@@ -1,0 +1,14 @@
+ENVIRONMENT=production
+
+DB_HOST=gkrypton.ccnnrymipzih.us-east-1.rds.amazonaws.com
+DB_USER=User
+DB_PASSWORD=Us3rM@rketPl@ce2016
+DB_NAME=clicksuscribe
+DB_DATE_STRINGS=date
+DB_DEBUG=false
+DB_SHOW_QUERIES=false
+DB_CONNECTION_LIMIT=15
+
+
+API_ERP=https://ws.compusoluciones.com/clicksuscribe/
+BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com; kelizald@compusoluciones.com
