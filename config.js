@@ -1,6 +1,3 @@
-'use strict';
-
-// libreria de mysql
 const mySqlModel = require('mysql');
 
 module.exports = {

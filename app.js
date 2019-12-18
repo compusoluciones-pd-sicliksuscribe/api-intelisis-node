@@ -4,11 +4,6 @@ const argv = require('minimist')(process.argv.slice(2));
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const config = require('./config');
-const Jobs = require('./models/jobs');
-const expressLogger = require('./helpers/logger').expressLogger;
-const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
-const logger = require('./helpers/logger').debugLogger;
 
 const loadEnvVariables = () => {
   switch (argv.env) {
@@ -26,6 +21,12 @@ if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
   dotenv.config({ path: './configs/.envProd' });
 } else if (argv.env) loadEnvVariables();
 else dotenv.config({ path: './configs/.envDev' });
+
+const Jobs = require('./models/jobs');
+const expressLogger = require('./helpers/logger').expressLogger;
+const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
+const logger = require('./helpers/logger').debugLogger;
+const config = require('./config');
 
 // url enconded y el parser con el formato json
 app.use(bodyParser.urlencoded({ extended: false }));
