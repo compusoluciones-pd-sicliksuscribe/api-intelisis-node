@@ -6,7 +6,12 @@ const billing = {};
 billing.selectPendingOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
-UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
+(CASE
+	WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreConsola), UsuarioFinal.NombreEmpresa, Serv.NombreConsola)
+    ELSE UsuarioFinal.NombreEmpresa
+END)
+ AS Proyecto,
+F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
 fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
@@ -15,9 +20,9 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
   WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
   WHEN (P.IdFabricante = 10 ) THEN Distribuidor.AgenteAmazonRenovacion
   ELSE Distribuidor.AgenteMicrosoft
-END) as Agente,
+END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
-     WHEN (P.IdFabricante = 10) THEN 'Cada día 3 del mes'
+     WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
 ELSE '' END AS EsquemaRenovacion
 FROM traPedidos P
 LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
@@ -27,6 +32,8 @@ INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuar
 INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
 INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
 INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
+LEFT JOIN traPedidosXConsola PxC on PxC.IdPedido = P.IdPedido
+LEFT JOIN traServiciosAWS Serv on Serv.IdConsola = PxC.IdConsola
 LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
 WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
 AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
@@ -35,7 +42,7 @@ AND P.IdFormaPago != 4
 AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
 WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
 END;
-  `);
+`);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 

@@ -38,7 +38,7 @@ module.exports = {
     host: '10.9.102.5',
     user: 'devclicksuscribe',
     password: 'Inn0vaci0n',
-    database: 'clickJulio',
+    database: 'clickEnero',
     dateStrings: 'date',
     debug: false,
   }),
