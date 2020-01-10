@@ -23,6 +23,7 @@ if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
 else dotenv.config({ path: './configs/.envDev' });
 
 const Jobs = require('./models/jobs');
+const jobs = require('./application/jobs');
 const expressLogger = require('./helpers/logger').expressLogger;
 const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
 const logger = require('./helpers/logger').debugLogger;
@@ -35,6 +36,7 @@ app.use(expressLogger);
 app.use(expressConsoleLogger);
 // Inicializador de Jobs
 // Jobs.start();
+jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
