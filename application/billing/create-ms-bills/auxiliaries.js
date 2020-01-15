@@ -95,8 +95,8 @@ const auxiliariesFactory = (dependencies = defaults) => {
     Promise.all(ordersToBill.map(async order => {
       const billExist = await verifyIfBillExist(order);
       const response = JSON.parse(billExist);
-      order.exist = response.length > 0 ? 1 : 0;
-      if (response.length > 0) {
+      if (response.length > 0 && response[0].Proyecto === order.Proyecto) {
+        order.exist = response.length > 0 ? 1 : 0;
         order.ID = response[0].ID;
         await updateOrder(response[0].ID, order.details);
         return order;
