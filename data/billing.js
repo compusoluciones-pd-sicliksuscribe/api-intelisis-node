@@ -3,8 +3,7 @@ const { IdProductoComisionTuClick } = require('../config');
 
 const billing = {};
 
-billing.selectPendingOrdersToBill = () => help.d$().query(`
-SELECT DISTINCT
+billing.selectPendingOrdersToBill = () => help.d$().query(`SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
 (CASE
 	WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreConsola), UsuarioFinal.NombreEmpresa, Serv.NombreConsola)
@@ -23,7 +22,7 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
 END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
      WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
-ELSE '' END AS EsquemaRenovacion
+ELSE '' END AS EsquemaRenovacion, P.Comentarios
 FROM traPedidos P
 LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
 AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
@@ -40,8 +39,9 @@ AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPag
 AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
 AND P.IdFormaPago != 4
 AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
+WHEN Pro.IdTipoProducto = 1 and P.IdFabricante = 10 then P.FechaFin <= NOW() 
 WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
-END;
+END
 `);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`

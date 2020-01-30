@@ -28,15 +28,15 @@ module.exports = {
   // // PRUEBAS //////////////////////////////////////////////////////////////////////////////
   // ////////////////////////////////////////////////////////////////////////////////////////
 
-   //ApiErp: 'https://ws.compusoluciones.com/IntelisisPruebas/',
+   // ApiErp: 'https://ws.compusoluciones.com/IntelisisPruebas/',
   ApiErp: 'http://localhost:54374/',
   AccessControlAllowOrigin: '*',
   environment: 'test',
-  bccMailList: 'mhernandez@compusoluciones.com',
+  bccMailList: 'mramos@ompusoluciones.com',
   connectionPool: mySqlModel.createPool({
     connectionLimit: 10,
-    host: '10.9.102.5',
-    user: 'devclicksuscribe',
+    host: '10.3.102.70',
+    user: 'root',
     password: 'Inn0vaci0n',
     database: 'clickEnero',
     dateStrings: 'date',
