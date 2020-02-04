@@ -60,7 +60,6 @@ const auxiliariesFactory = (dependencies = defaults) => {
       const response = JSON.parse(billExist);
       return response.length > 0 ? updateOrder(response[0].ID, order.IdPedido) : billOrder(order);
     }));
-
   return auxiliaries;
 };
 
