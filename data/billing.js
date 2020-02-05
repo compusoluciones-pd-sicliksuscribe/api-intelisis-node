@@ -6,7 +6,7 @@ const billing = {};
 billing.selectPendingOrdersToBill = () => help.d$().query(`SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
 (CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(CxE.IdConsola), Serv.NombreConsola, CxE.NombreEmpresa)
+    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(CxE.IdConsola), Distribuidor.NombreEmpresa, CxE.NombreEmpresa)
     ELSE UsuarioFinal.NombreEmpresa
 END)
  AS Proyecto,
