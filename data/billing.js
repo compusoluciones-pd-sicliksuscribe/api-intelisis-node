@@ -5,9 +5,10 @@ const billing = {};
 
 billing.selectPendingOrdersToBill = () => help.d$().query(`SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
-(CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(CxE.IdConsola), Distribuidor.NombreEmpresa, CxE.NombreEmpresa)
-    ELSE UsuarioFinal.NombreEmpresa
+(CASE WHEN (P.IdFabricante = 10)
+	THEN IF(CxE.IdConsola IS NULL, Distribuidor.NombreEmpresa, 
+		IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
+    ELSE  Distribuidor.NombreEmpresa
 END)
  AS Proyecto,
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
@@ -43,9 +44,10 @@ WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.
 AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
 AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
 AND P.IdFormaPago != 4
-AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
-WHEN Pro.IdTipoProducto = 1 and P.IdFabricante = 10 then P.FechaFin <= NOW() 
-WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
+AND CASE 
+	WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
+	WHEN Pro.IdTipoProducto = 1 AND P.IdFabricante = 10 THEN P.FechaFin <= NOW() 
+	WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
 END;
 `);
 
