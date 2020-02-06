@@ -3,7 +3,8 @@ const { IdProductoComisionTuClick } = require('../config');
 
 const billing = {};
 
-billing.selectPendingOrdersToBill = () => help.d$().query(`SELECT DISTINCT
+billing.selectPendingOrdersToBill = () => help.d$().query(`
+SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
 (CASE WHEN (P.IdFabricante = 10)
 	THEN IF(CxE.IdConsola IS NULL, Distribuidor.NombreEmpresa, 
@@ -25,7 +26,7 @@ CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microso
      WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
 ELSE '' END AS EsquemaRenovacion,
 (CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), CxE.NombreEmpresa, Serv.NombreConsola)
+    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola)
     When (P.IdFabricante != 10) THEN ''
 END) AS Observaciones
 FROM traPedidos P
