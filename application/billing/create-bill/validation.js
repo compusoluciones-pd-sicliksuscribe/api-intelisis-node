@@ -12,6 +12,7 @@ const billSchema = Joi.object().keys({
   IdFormaPago: Joi.required(),
   Vencimiento: Joi.required(),
   EsquemaRenovacion: Joi.required(),
+  Observaciones: Joi.required(),
 });
 
 const response = (err, IdPedido) => help.r$(0, 'IdPedido: ' + IdPedido + ' ,Error en el campo [' + err.details[0].path + ']');

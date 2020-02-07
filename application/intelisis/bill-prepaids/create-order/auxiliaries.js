@@ -18,6 +18,7 @@ const applyClientsBalance = () => {
     EsquemaRenovacion: orders.EsquemaRenovacion,
     Vencimiento: orders.Vencimiento,
     Agente: orders.Agente,
+    Observaciones: orders.Observaciones,
   });
 
   const getOptions = orders => ({
