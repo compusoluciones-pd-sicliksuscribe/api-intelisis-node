@@ -19,7 +19,7 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
 (CASE
   WHEN (P.IdFabricante = 2 AND TPP.IdPedidoPadre IS NOT NULL) THEN Distribuidor.AgenteAutodeskRenovacion
   WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
-  WHEN (P.IdFabricante = 10 ) THEN Distribuidor.AgenteAmazonRenovacion
+  WHEN (P.IdFabricante = 10 ) THEN Distribuidor.AgenteAmazon
   ELSE Distribuidor.AgenteMicrosoft
 END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
