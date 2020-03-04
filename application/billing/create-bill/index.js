@@ -13,6 +13,6 @@ const billAllOrders = () =>
       .then(ordersBilled => {
         logger.info('Resultado', ordersBilled);
         return 'Ordenes Facturadas';
-      });
+      } );
 
 module.exports = billAllOrders;
