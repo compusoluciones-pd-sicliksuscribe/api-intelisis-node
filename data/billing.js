@@ -9,7 +9,7 @@ P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor
 (CASE WHEN (P.IdFabricante = 10)
 	THEN IF(CxE.IdConsola IS NULL, Distribuidor.NombreEmpresa, 
 		IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
-    ELSE  Distribuidor.NombreEmpresa
+    ELSE  UsuarioFinal.NombreEmpresa
 END)
  AS Proyecto,
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
