@@ -1,5 +1,5 @@
 const help = require('../helpers/help');
-const pedidos = require('./pedidos');
+const pedidos = require('../application/orders');
 const credito = require('./credito');
 const distribuidores = require('./distribuidores');
 const productos = require('./productos');
@@ -13,7 +13,7 @@ const ERP = {};
 // Mando a llamar todas las funciones de este modelo y regreso promesa
 ERP.actualizar = () => (
   billing.billOrders()
-    .then(pedidos.obtenerPagados)
+    .then(pedidos.updateOrderStatus)
     .then(exchangeRate.syncronizeExchangeRates)
     .then(credito.actualizarClientes)
     .then(distribuidores.obtener)

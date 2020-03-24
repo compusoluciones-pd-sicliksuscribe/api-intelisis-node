@@ -35,8 +35,7 @@ app.use(bodyParser.json());
 app.use(expressLogger);
 app.use(expressConsoleLogger);
 // Inicializador de Jobs
-// Jobs.start();
-// jobs.start();
+jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
