@@ -52,4 +52,10 @@ router.post('/billOrder', (request, response) => {
 });
 
 
+router.post('/get-data-pdf', (request, response) => {
+  credito.actualizarCredito(request.body.Cliente, request.body.Credito)
+    .catch(error => response.send(error))
+    .done(result => response.send(result));
+});
+
 module.exports = router;

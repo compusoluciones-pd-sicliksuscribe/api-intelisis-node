@@ -33,5 +33,11 @@ router.put('/update-paid-orders', (req, res) => {
     .catch(err => res.send(err));
 });
 
+
+router.post('/get-data-pdf/:IdOrder', (req, res) => {
+  orders.getDataPDFOrder(req.params)
+      .then(result => res.send(result))
+      .catch(err => res.send(err));
+});
 module.exports = router;
 
