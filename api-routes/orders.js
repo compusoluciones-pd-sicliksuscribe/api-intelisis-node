@@ -34,7 +34,7 @@ router.put('/update-paid-orders', (req, res) => {
 });
 
 
-router.post('/get-data-pdf/:IdOrder', (req, res) => {
+router.get('/get-data-pdf/:IdOrder', (req, res) => {
   orders.getDataPDFOrder(req.params)
       .then(result => res.send(result))
       .catch(err => res.send(err));
