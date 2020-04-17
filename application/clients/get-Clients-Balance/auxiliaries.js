@@ -1,15 +1,19 @@
 const config = require('../../../config');
 const { requestPromise } = require('../../../helpers/logged-request');
 const enterpriseData = require('../../../data/enterprise');
+const ordersData = require('../../../data/orders');
 const logger = require('../../../helpers/logger').debugLogger;
 const throwCustomError = require('../../../helpers/factories/errorFactory');
 
 const defaultDependencies = {
   enterprise: enterpriseData,
+  orders: ordersData,
 };
 
 const getClientsBalance = (dependencies = defaultDependencies) => {
-  const { enterprise } = dependencies;
+  const { enterprise, orders } = dependencies;
+
+  const { getPrepaidOrdersWithoutBill } = orders;
 
   const applyLastBalance = async ({ transferencia, IdERP, moneda }) => {
     if (moneda === 'Dólares') {
@@ -55,9 +59,22 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
       .then(transferencia => ({ transferencia, IdERP: id, moneda }));
   };
 
+  const getOrdersWithoutBill = async data => {
+    const prepaidOrdersWithoutBill = await getPrepaidOrdersWithoutBill(data.IdERP);
+    let totalAmount = 0;
+    if (prepaidOrdersWithoutBill.totalDebt && data.transferencia) {
+      totalAmount = data.transferencia - prepaidOrdersWithoutBill.totalDebt;
+    } else {
+      totalAmount = data.transferencia;
+    }
+    data.transferencia = totalAmount;
+    return data;
+  };
+
   return {
     applyLastBalance,
     getLastBalancePrepaid,
+    getOrdersWithoutBill,
   };
 };
 
