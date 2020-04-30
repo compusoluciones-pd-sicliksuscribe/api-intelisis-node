@@ -67,7 +67,8 @@ const getClientsBalance = (dependencies = defaultDependencies) => {
     } else {
       totalAmount = data.transferencia;
     }
-    data.transferencia = totalAmount;
+
+    data.transferencia = totalAmount < 0 ? 0 : totalAmount;
     return data;
   };
 
