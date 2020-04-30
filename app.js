@@ -9,7 +9,7 @@ const loadEnvVariables = () => {
   switch (argv.env) {
     case 'development': dotenv.config({ path: './configs/.envDev' });
       break;
-    case 'staging': dotenv.config({ path: './configs/.env.staging' });
+    case 'staging': dotenv.config({ path: './configs/.envStage' });
       break;
     case 'production': dotenv.config({ path: './configs/.envProd' });
       break;
@@ -19,6 +19,8 @@ const loadEnvVariables = () => {
 
 if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
   dotenv.config({ path: './configs/.envProd' });
+} else if (process.env.STAGING == 1) {
+  dotenv.config({ path: './configs/.envStage' });
 } else if (argv.env) loadEnvVariables();
 else dotenv.config({ path: './configs/.envDev' });
 
@@ -35,7 +37,7 @@ app.use(bodyParser.json());
 app.use(expressLogger);
 app.use(expressConsoleLogger);
 // Inicializador de Jobs
-jobs.start();
+// jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect

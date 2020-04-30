@@ -1,0 +1,14 @@
+ENVIRONMENT=staging
+
+DB_HOST=db-sicliksuscribe-staging.crwhfvngz1ns.us-east-1.rds.amazonaws.com
+DB_USER=root
+DB_PASSWORD=fernandoMAX_1994
+DB_NAME=clicksuscribe
+DB_DATE_STRINGS=date
+DB_DEBUG=false
+DB_SHOW_QUERIES=false
+DB_CONNECTION_LIMIT=15
+
+
+API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
+BCC_MAIL_LIST= josedera@compusoluciones.com; 
