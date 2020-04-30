@@ -3,10 +3,10 @@ const emailerConfig = {};
 emailerConfig.nodemailerTransport = {
   host: 'smtp.office365.com',
   port: '587',
-  // auth: {
-  //   user: 'clicksuscribe@compusoluciones.com',
-  //   pass: 'Compusol1',
-  // },
+  auth: {
+    user: 'clicksuscribe@compusoluciones.com',
+    pass: 'mmbvdwndtjgbccfh',
+  },
   secureConnection: false,
   secure: false,
   requireTLS: true,
@@ -14,11 +14,11 @@ emailerConfig.nodemailerTransport = {
     ciphers: 'SSLv3',
   },
 // se descomenta para pruebas
-  service: 'gmail',
-  auth: {
-    user: 'siclicksuscribe@gmail.com',
-    pass: 'Inn0vaci0n',
-  },
+  // service: 'gmail',
+  // auth: {
+  //   user: 'siclicksuscribe@gmail.com',
+  //   pass: 'Inn0vaci0n',
+  // },
 };
 
 module.exports = emailerConfig;
