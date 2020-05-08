@@ -29,10 +29,27 @@ distribuidores.barrerDistribuidores = (distribuidoresERP) => {
       distribuidores.valido(distribuidoresERP[i]).then((r$) => {
         if (r$.success === 1) {
           const empresa = {
-            pIdERP: r$.data.IdERP, pRFC: r$.data.RFC, pNombreEmpresa: r$.data.NombreEmpresa, pDireccion: r$.data.Direccion,
-            pCiudad: r$.data.Ciudad, pEstado: r$.data.Estado, pCodigoPostal: r$.data.CodigoPostal, pNombreContacto: null, pApellidosContacto: null,
-            pCorreoContacto: null, pTelefonoContacto: null, pCredito: null, pZonaImpuesto: r$.data.ZonaImpuesto, pLada: null, IdMicrosoftUF: null,
-            IdMicrosoftDist: r$.data.IdMicrosoft, IdAutodeskUF: null, IdAutodeskDist: r$.data.IdAutodesk, ContratoAutodeskUF: null, DominioMicrosoftUF: null
+            pIdERP: r$.data.IdERP,
+            pRFC: r$.data.RFC,
+            pNombreEmpresa: r$.data.NombreEmpresa,
+            pDireccion: r$.data.Direccion,
+            pCiudad: r$.data.Ciudad,
+            pEstado: r$.data.Estado,
+            pCodigoPostal: r$.data.CodigoPostal,
+            pNombreContacto: null,
+            pApellidosContacto: null,
+            pCorreoContacto: null,
+            pTelefonoContacto: null,
+            pCredito: null,
+            pZonaImpuesto: r$.data.ZonaImpuesto,
+            pLada: null,
+            IdMicrosoftUF: null,
+            IdMicrosoftDist: r$.data.IdMicrosoft,
+            IdAutodeskUF: null,
+            IdAutodeskDist: r$.data.IdAutodesk,
+            ContratoAutodeskUF: null,
+            DominioMicrosoftUF: null,
+            pIdIBMDist: r$.data.pIdIBMDist,
           };
           help.d$().callStoredProcedure('traEmpresas_insert', empresa)
             .catch(error => deferred.reject(error));
