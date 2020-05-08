@@ -49,7 +49,7 @@ distribuidores.barrerDistribuidores = (distribuidoresERP) => {
             IdAutodeskDist: r$.data.IdAutodesk,
             ContratoAutodeskUF: null,
             DominioMicrosoftUF: null,
-            pIdIBMDist: r$.data.pIdIBMDist,
+            pIdIBMDist: r$.data.IdIBM,
           };
           help.d$().callStoredProcedure('traEmpresas_insert', empresa)
             .catch(error => deferred.reject(error));
