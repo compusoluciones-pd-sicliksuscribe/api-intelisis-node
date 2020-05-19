@@ -18,11 +18,12 @@ const createSale = params => {
     IdPrimerPedido: params.IdPrimerPedido,
     EsquemaRenovacion: params.EsquemaRenovacion,
     Observaciones: params.Observaciones,
+    SinCredito: 1,
   };
 
   const options = {
     method: 'POST',
-    uri: config.ApiErp + 'VentaPedido',
+    uri: config.ApiErp + 'Venta',
     form: parameters,
     headers: {
       token: config.TokenERP,
