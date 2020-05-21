@@ -21,9 +21,11 @@ const createSale = params => {
     SinCredito: 1,
   };
 
+  const uriParam = (params.IdFormaPago === 2) ? 'Venta' : 'Pedido';
+
   const options = {
     method: 'POST',
-    uri: config.ApiErp + 'Venta',
+    uri: `${config.ApiErp}${uriParam}`,
     form: parameters,
     headers: {
       token: config.TokenERP,
