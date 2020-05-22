@@ -18,6 +18,14 @@ const auxiliariesFactory = (dependencies = defaults) => {
   const auxiliaries = { };
   auxiliaries.selectPendingAWSOrders = () => selectPendingAWSOrdersToBill();
 
+  const validateCommission = orderDetails => {
+    const products = orderDetails.data.filter(details => details.IdProducto !== 74);
+    const commission = orderDetails.data.filter(details => details.IdProducto === 74)[0];
+    const totalWithoutCommission = products.reduce((totalPrice, currentProduct) => totalPrice + currentProduct.Precio, 0);
+    if (totalWithoutCommission > 0 && commission) products.push(commission);
+    return products;
+  };
+
   const verifyIfBillExist = order => intelisis.getSale(order.IdPedido);
 
   const verifyResponse = (res, { IdPedido }) => {
@@ -37,6 +45,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
     const parsedBill = JSON.parse(bill);
     if (parsedBill.length > 0) {
       return selectPendingOrderDetail(parsedBill[0].ID, parsedBill[0].IdPedidoMarketPlace)
+        .then(validateCommission)
         .then(insertOrderDetails)
         .then(patch({ Facturado: 1, IdFactura: parsedBill[0].ID }, parsedBill[0].IdPedidoMarketPlace));
     }
