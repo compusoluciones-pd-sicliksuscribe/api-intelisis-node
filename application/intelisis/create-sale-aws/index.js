@@ -19,6 +19,7 @@ const createSale = params => {
     EsquemaRenovacion: params.EsquemaRenovacion,
     Observaciones: params.Observaciones,
     SinCredito: 1,
+    CondicionERP: params.CondicionERP,
   };
 
   const uriParam = (params.IdFormaPago === 2) ? 'Venta' : 'Pedido';
