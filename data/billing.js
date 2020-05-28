@@ -26,7 +26,7 @@ CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microso
      WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
 ELSE '' END AS EsquemaRenovacion,
 (CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola)
+    WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
     When (P.IdFabricante != 10) THEN ''
 END) AS Observaciones
 FROM traPedidos P
@@ -103,7 +103,7 @@ CASE
 ELSE '' 
 END AS EsquemaRenovacion,
 (CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola)
+  WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
     When (P.IdFabricante != 10) THEN ''
 END) AS Observaciones
 FROM traPedidos P
