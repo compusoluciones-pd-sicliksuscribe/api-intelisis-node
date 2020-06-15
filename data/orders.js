@@ -17,4 +17,16 @@ orders.getPrepaidOrdersWithoutBill = IdERP => (
       .then(result => result.data[0])
 );
 
+orders.getOpenPayDetails = IdPedido => (
+  help.d$().query(`
+    SELECT 
+      TarjetaResultIndicator
+    FROM
+      traPedidos
+    WHERE
+      IdPedido = ?
+  `, [IdPedido])
+    .then(result => result.data[0])
+);
+
 module.exports = orders;

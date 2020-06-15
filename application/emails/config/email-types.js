@@ -29,11 +29,25 @@ emailTypes.NotificationErrorInsertOrder = (body, template) => {
 
 emailTypes.NotificationErrorInsertOrderDetails = (body, template) => {
   const emailBody = Object.assign({}, body);
-  emailBody.address = ['mhernandez@compusoluciones.com'];
+  emailBody.address = ['clicksuscribe@compusoluciones.com'];
   emailBody.subject = 'API ClickSuscribe - Error al registrar detalles de factura';
   emailBody.title = '<br>Fallo al registrar los detalles de facturación en Intelisis';
   emailBody.message = `
     <br><br>Error al insertar detalle del pedido
+    <br> IdPedido: ${body.IdPedido}<br>
+
+  `;
+  return getBaseMail(emailBody, template);
+};
+
+
+emailTypes.NotificationErrorInsertBillLog = (body, template) => {
+  const emailBody = Object.assign({}, body);
+  emailBody.address = ['clicksuscribe@compusoluciones.com'];
+  emailBody.subject = 'API ClickSuscribe - Error al registrar bitácora';
+  emailBody.title = '<br>Fallo al registrar la bitácora en Intelisis';
+  emailBody.message = `
+    <br><br>Error al insertar bitácora del pedido
     <br> IdPedido: ${body.IdPedido}<br>
 
   `;
