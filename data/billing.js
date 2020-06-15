@@ -23,7 +23,7 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
   ELSE Distribuidor.AgenteMicrosoft
 END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
-     WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
+  WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
 ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
