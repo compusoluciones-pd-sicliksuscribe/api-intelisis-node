@@ -1,5 +1,6 @@
 const config = require('../../../config');
 const { requestPromise } = require('../../../helpers/logged-request');
+const { getIdEmpresa, insertCXCAgente } = require('../../../data/enterprise');
 const help = require('../../../helpers/help');
 
 const createOrder = () => {
@@ -40,9 +41,15 @@ const createOrder = () => {
     DominioMicrosoftUF: null,
   });
 
+  const upsertCXCAgente = async client => {
+    const { IdEmpresa } = await getIdEmpresa(client.IdERP);
+    return insertCXCAgente(client, IdEmpresa);
+  };
+
   const upsertClients = async clientsData => Promise.all(clientsData.map(async client => {
     const clientBody = buildClientBody(client);
     return help.d$().callStoredProcedure('traEmpresas_insert', clientBody)
+        .then(() => upsertCXCAgente(client))
         .catch(error => error);
   }));
 

@@ -11,6 +11,7 @@
   "author": "CompuSoluciones",
   "license": "ISC",
   "dependencies": {
+    "@compusoluciones/csmysql-gateway": "1.0.2",
     "bluebird": "^3.4.7",
     "body-parser": "^1.13.3",
     "cron": "^1.1.0",
