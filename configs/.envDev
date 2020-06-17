@@ -11,4 +11,14 @@ DB_CONNECTION_LIMIT=15
 
 
 API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
-BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com; kelizald@compusoluciones.com; mramos@compusoluciones.com
+BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com;
+
+
+DB_SICLICK_ORDENES_HOST=10.3.102.70
+DB_SICLICK_ORDENES_USER=root
+DB_SICLICK_ORDENES_PASSWORD=Inn0vaci0n
+DB_SICLICK_ORDENES_NAME=SiclikOrdenes
+DB_SICLICK_ORDENES_DATE_STRINGS=date
+DB_SICLICK_ORDENES_SHOW_QUERIES=false
+DB_SICLICK_ORDENES_CONNECTION_LIMIT=15
+DB_SICLICK_ORDENES_DEBUG=false

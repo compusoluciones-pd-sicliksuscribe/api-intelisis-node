@@ -54,4 +54,36 @@ emailTypes.NotificationErrorInsertBillLog = (body, template) => {
   return getBaseMail(emailBody, template);
 };
 
+emailTypes.NotificationCXCPayment = (body, template) => {
+  const emailBody = Object.assign({}, body);
+  emailBody.address = body.CorreoContacto;
+  emailBody.subject = 'ClickSuscribe - Notificacion Openpay';
+  emailBody.title = '<br>¡Se registró un pago en openpay';
+  emailBody.message = `
+    <br><br> Hola ${body.NombreContacto}
+    <br> Se registró un pago de openpay
+    <br>Distribuidor ${body.Cliente} <br>
+    Proyecto: ${body.Proyecto} <br>
+    Referencia: ${body.openpayData} <br>
+    <br> IdPedido: ${body.IdPedido}<br>
+  `;
+  return getBaseMail(emailBody, template);
+};
+
+emailTypes.NotificationAgenteMarca = (body, template) => {
+  const emailBody = Object.assign({}, body);
+  emailBody.address = body.CorreoContacto;
+  emailBody.subject = 'ClickSuscribe - Notificacion Openpay';
+  emailBody.title = '<br>¡Se registró un pago en openpay';
+  emailBody.message = `
+    <br><br> Hola ${body.NombreContacto}
+    <br> Se registró un pago de openpay
+    <br> Distribuidor ${body.Cliente} <br>
+    Proyecto: ${body.Proyecto} <br>
+    Referencia: ${body.openpayData} <br>
+    <br> IdPedido: ${body.IdPedido}<br>
+  `;
+  return getBaseMail(emailBody, template);
+};
+
 module.exports = emailTypes;

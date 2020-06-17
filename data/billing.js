@@ -188,7 +188,7 @@ P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor
   IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
     ELSE  UsuarioFinal.NombreEmpresa
 END)
- AS Proyecto,
+ AS Proyecto, P.IdEmpresaDistribuidor,
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
 fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,

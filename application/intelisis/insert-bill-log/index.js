@@ -5,7 +5,6 @@ const config = require('../../../config');
 const insertBillLog = async ({ ID, Evento }) => {
   const parameters = {
     ID,
-    Fecha: moment(),
     Evento,
   };
 
@@ -18,12 +17,11 @@ const insertBillLog = async ({ ID, Evento }) => {
     },
   };
 
-  // return requestPromise(options)
-  //   .catch(error => {
-  //     throw error;
-  //   })
-  //   .then(result => result);
-  return options;
+  return requestPromise(options)
+    .catch(error => {
+      throw error;
+    })
+    .then(result => result);
 };
 
 module.exports = insertBillLog;
