@@ -179,6 +179,7 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     WHERE PD.IdPedido = ? AND P.IdProducto <> ?
     AND CASE
     WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario > 0.05
+    ELSE PD.PrecioUnitario
     END;`,
   [ID, IdPedido, IdProductoComisionTuClick]);
 
