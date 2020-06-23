@@ -176,7 +176,10 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     FROM traPedidoDetalles PD
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
-    WHERE PD.IdPedido = ? AND P.IdProducto <> ?;`,
+    WHERE PD.IdPedido = ? AND P.IdProducto <> ?
+    AND CASE
+    WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario > 0.05
+    END;`,
   [ID, IdPedido, IdProductoComisionTuClick]);
 
 billing.selectPendingMsOrderDetail = (ID, IdPedido, TipoCambio) => help.d$().query(`
