@@ -1,6 +1,6 @@
 ENVIRONMENT=development
 
-DB_HOST=10.3.102.70
+DB_HOST=10.3.102.75
 DB_USER=root
 DB_PASSWORD=Inn0vaci0n
 DB_NAME=azurePlan
@@ -14,7 +14,7 @@ API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
 BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com;
 
 
-DB_SICLICK_ORDENES_HOST=10.3.102.70
+DB_SICLICK_ORDENES_HOST=10.3.102.75
 DB_SICLICK_ORDENES_USER=root
 DB_SICLICK_ORDENES_PASSWORD=Inn0vaci0n
 DB_SICLICK_ORDENES_NAME=SiclikOrdenes
