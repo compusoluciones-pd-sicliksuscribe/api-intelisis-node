@@ -5,84 +5,190 @@ const billing = {};
 
 billing.selectPendingOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
-P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
-(CASE WHEN (P.IdFabricante = 10)
-	THEN IF(CxE.IdConsola IS NULL, Distribuidor.NombreEmpresa, 
-		IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
-    ELSE  UsuarioFinal.NombreEmpresa
-END)
- AS Proyecto,
-F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
-fn_CalcularTotalPedido(P.IdPedido) AS Total, 
-fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
-IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
-(CASE
-  WHEN (P.IdFabricante = 2 AND TPP.IdPedidoPadre IS NOT NULL) THEN Distribuidor.AgenteAutodeskRenovacion
-  WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
-  WHEN (P.IdFabricante = 10 ) THEN Distribuidor.AgenteAmazon
-  ELSE Distribuidor.AgenteMicrosoft
-END) AS Agente,
-CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
-     WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
-ELSE '' END AS EsquemaRenovacion,
-(CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola)
-    When (P.IdFabricante != 10) THEN ''
-END) AS Observaciones
-FROM traPedidos P
-LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
-AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
-INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
-INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
-INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
-INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
-INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
-LEFT JOIN traPedidosXConsola PxC on PxC.IdPedido = P.IdPedido
-LEFT JOIN traServiciosAWS Serv on Serv.IdConsola = PxC.IdConsola
-LEFT JOIN traConsolasXEmpresa CxE on CxE.IdConsola = PxC.IdConsola
-LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
-WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
-AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
-AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
-AND P.IdFormaPago not in (4,5,1)
-AND P.IdPedidoPadre is null
-AND CASE
-  WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
-  WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
-  WHEN Pro.IdTipoProducto = 1 AND P.IdFabricante = 10 THEN P.FechaFin <= NOW()
-END;
+    P.IdPedido,
+    P.IdPrimerPedido,
+    Distribuidor.IdERP AS Cliente,
+    IFNULL(Distribuidor.Credito, 0) Credito,
+    (CASE
+        WHEN
+            (P.IdFabricante = 10)
+        THEN
+            IF(CxE.IdConsola IS NULL,
+                Distribuidor.NombreEmpresa,
+                IF(CxE.NombreEmpresa IS NULL,
+                    Distribuidor.NombreEmpresa,
+                    CxE.NombreEmpresa))
+        ELSE UsuarioFinal.NombreEmpresa
+    END) AS Proyecto,
+    F.UEN,
+    P.MonedaPago,
+    P.TipoCambio,
+    P.IdFormaPago,
+    FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+    FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+            Distribuidor.ZonaImpuesto) AS IVA,
+    IF(P.IdFabricante = 2,
+        contrato.FechaFin,
+        P.FechaFin) AS Vencimiento,
+    (CASE
+        WHEN
+            (P.IdFabricante = 2
+                AND TPP.IdPedidoPadre IS NOT NULL)
+        THEN
+            Distribuidor.AgenteAutodeskRenovacion
+        WHEN (P.IdFabricante = 2) THEN Distribuidor.AgenteAutodesk
+        WHEN (P.IdFabricante = 10) THEN Distribuidor.AgenteAmazon
+        ELSE Distribuidor.AgenteMicrosoft
+    END) AS Agente,
+    CASE
+        WHEN
+            (P.IdFabricante = 1
+                AND P.IdEsquemaRenovacion = 2)
+        THEN
+            'Anual Microsoft'
+        WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
+        ELSE ''
+    END AS EsquemaRenovacion,
+    (CASE
+        WHEN
+            (P.IdFabricante = 10)
+        THEN
+            IF(ISNULL(Serv.NombreEmpresa),
+                Distribuidor.NombreEmpresa,
+                Serv.NombreConsola)
+        WHEN (P.IdFabricante != 10) THEN ''
+    END) AS Observaciones
+FROM
+    traPedidos P
+        LEFT JOIN
+    traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
+        AND CASE
+        WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1
+        ELSE contrato.Activo = 1
+    END
+        INNER JOIN
+    traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+        INNER JOIN
+    traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+        INNER JOIN
+    traFabricantes F ON F.IdFabricante = P.IdFabricante
+        INNER JOIN
+    traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+        AND (PD.Activo = 1 OR PD.PorCancelar = 1)
+        AND PD.PedidoAFabricante = 1
+        INNER JOIN
+    traProductos Pro ON Pro.IdProducto = PD.IdProducto
+        LEFT JOIN
+    traPedidosXConsola PxC ON PxC.IdPedido = P.IdPedido
+        LEFT JOIN
+    traServiciosAWS Serv ON Serv.IdConsola = PxC.IdConsola
+        LEFT JOIN
+    traConsolasXEmpresa CxE ON CxE.IdConsola = PxC.IdConsola
+        LEFT JOIN
+    traPedidosPadre TPP ON TPP.IdPedido = P.IdPedido
+WHERE
+    P.Facturado = 0
+        AND P.IdEstatusPedido IN (2 , 3, 4, 5, 8)
+        AND Distribuidor.IdERP IS NOT NULL
+        AND P.PedidoImportado IS NULL
+        AND UsuarioFinal.NombreEmpresa IS NOT NULL
+        AND F.UEN IS NOT NULL
+        AND P.MonedaPago IS NOT NULL
+        AND P.TipoCambio IS NOT NULL
+        AND CASE
+        WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL
+        ELSE P.FechaFin IS NOT NULL
+    END
+        AND P.IdFormaPago NOT IN (4 , 5, 1)
+        AND P.IdPedidoPadre IS NULL
+        AND CASE
+        WHEN
+            P.IdFabricante = 1
+                AND P.IdEsquemaRenovacion IN (3 , 8)
+        THEN
+            FALSE
+        ELSE TRUE
+    END
+        AND CASE
+        WHEN
+            Pro.IdTipoProducto = 2
+                OR Pro.IdTipoProducto = 4
+        THEN
+            Pro.IdTipoProducto != 3
+        WHEN
+            Pro.IdTipoProducto = 3
+        THEN
+            P.FechaFin <= NOW()
+                AND Pro.IdTipoProducto = 3
+        WHEN
+            Pro.IdTipoProducto = 1
+                AND P.IdFabricante = 10
+        THEN
+            P.FechaFin <= NOW()
+    END;
 `);
 
-billing.selectPendingMsOrdersToBill = () => help.d$().query(`SELECT DISTINCT
-P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
-UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
-fn_CalcularTotalPedido(P.IdPedido) AS Total, 
-fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
-IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
-(CASE
-  WHEN (P.IdFabricante = 2 AND TPP.IdPedidoPadre IS NOT NULL) THEN Distribuidor.AgenteAutodeskRenovacion
-  WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
-  ELSE Distribuidor.AgenteMicrosoft
-END) as Agente,
- P.IdEsquemaRenovacion AS EsquemaRenovacion,
-P.IdEmpresaDistribuidor, P.IdEmpresaUsuarioFinal
-FROM traPedidos P
-LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
-AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
-INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
-INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
-INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
-INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1 AND PD.IdProducto != 75
-INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
-LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
-WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
-AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
-AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
-AND P.IdFormaPago != 4
-AND P.IdPedidoPadre = 1 and P.IdEsquemaRenovacion = 1 and IdFormaPago = 2 
-AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
-WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
-END;`).then(res => res.data);
+billing.selectPendingMsOrdersToBill = () => help.d$().query(
+  `SELECT DISTINCT
+  P.IdPedido,
+  P.IdPrimerPedido,
+  Distribuidor.IdERP AS Cliente,
+  IFNULL(Distribuidor.Credito, 0) Credito,
+  UsuarioFinal.NombreEmpresa AS Proyecto,
+  F.UEN,
+  P.MonedaPago,
+  P.TipoCambio,
+  P.IdFormaPago,
+  FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+  FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+          Distribuidor.ZonaImpuesto) AS IVA,
+  P.FechaFin AS Vencimiento,
+  Distribuidor.AgenteMicrosoft AS Agente,
+  P.IdEsquemaRenovacion AS EsquemaRenovacion,
+  P.IdEmpresaDistribuidor,
+  P.IdEmpresaUsuarioFinal
+FROM
+  traPedidos P
+      INNER JOIN
+  traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+      INNER JOIN
+  traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+      INNER JOIN
+  traFabricantes F ON F.IdFabricante = P.IdFabricante
+      INNER JOIN
+  traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+      AND (PD.Activo = 1 OR PD.PorCancelar = 1)
+      AND PD.PedidoAFabricante = 1
+      AND PD.IdProducto != 75
+      INNER JOIN
+  traProductos Pro ON Pro.IdProducto = PD.IdProducto
+      LEFT JOIN
+  traPedidosPadre TPP ON TPP.IdPedido = P.IdPedido
+WHERE
+  P.Facturado = 0
+      AND P.IdEstatusPedido IN (2 , 3, 4, 5, 8)
+      AND Distribuidor.IdERP IS NOT NULL
+      AND P.PedidoImportado IS NULL
+      AND UsuarioFinal.NombreEmpresa IS NOT NULL
+      AND F.UEN IS NOT NULL
+      AND P.MonedaPago IS NOT NULL
+      AND P.TipoCambio IS NOT NULL
+      AND P.IdFormaPago != 4
+      AND P.IdPedidoPadre = 1
+      AND P.IdEsquemaRenovacion = 1
+      AND IdFormaPago = 2
+      AND CASE
+      WHEN
+          Pro.IdTipoProducto = 2
+              OR Pro.IdTipoProducto = 4
+      THEN
+          Pro.IdTipoProducto != 3
+      WHEN
+          Pro.IdTipoProducto = 3
+      THEN
+          P.FechaFin <= NOW()
+              AND Pro.IdTipoProducto = 3
+  END;`).then(res => res.data);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
@@ -205,7 +311,9 @@ ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola)
     When (P.IdFabricante != 10) THEN ''
-END) AS Observaciones
+END) AS Observaciones,
+CASE WHEN openpay.CardType = 'debit' then 'Tarjeta de Débito' when openpay.CardType = 'credit' then 'Tarjeta de Crédito' else 'banktransfer'
+END AS FormaPago
 FROM traPedidos P
 LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
 AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
@@ -218,6 +326,7 @@ LEFT JOIN traPedidosXConsola PxC on PxC.IdPedido = P.IdPedido
 LEFT JOIN traServiciosAWS Serv on Serv.IdConsola = PxC.IdConsola
 LEFT JOIN traConsolasXEmpresa CxE on CxE.IdConsola = PxC.IdConsola
 LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
+LEFT JOIN logPaymentOpenPay openpay on openpay.IdPedido = P.IdPedido AND openpay.Renovacion = 0
 WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
 AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
 AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END

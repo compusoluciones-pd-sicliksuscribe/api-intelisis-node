@@ -75,7 +75,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
   const billOrder = async order => {
     const bill = await intelisis.createSale(order);
     const parsedBill = JSON.parse(bill);
-    if (parsedBill.length > 0) {
+    if (parsedBill[0].ID) {
       return selectPendingOrderDetail(parsedBill[0].ID, parsedBill[0].IdPedidoMarketPlace)
         .then(validateCommission)
         .then(insertOrderDetails)
