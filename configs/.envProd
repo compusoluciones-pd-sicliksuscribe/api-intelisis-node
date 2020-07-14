@@ -11,4 +11,5 @@ DB_CONNECTION_LIMIT=15
 
 
 API_ERP=https://ws.compusoluciones.com/clicksuscribe/
+API_MS=http://microsoft-api.us-east-1.elasticbeanstalk.com/
 BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com; kelizald@compusoluciones.com

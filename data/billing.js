@@ -36,7 +36,7 @@ INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistr
 INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
 INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
 INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
-INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
+INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto AND Pro.IdTipoProducto not in (3)
 LEFT JOIN traPedidosXConsola PxC on PxC.IdPedido = P.IdPedido
 LEFT JOIN traServiciosAWS Serv on Serv.IdConsola = PxC.IdConsola
 LEFT JOIN traConsolasXEmpresa CxE on CxE.IdConsola = PxC.IdConsola
@@ -48,7 +48,6 @@ AND P.IdFormaPago != 4
 AND P.IdPedidoPadre is null
 AND CASE
   WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
-  WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
   WHEN Pro.IdTipoProducto = 1 AND P.IdFabricante = 10 THEN P.FechaFin <= NOW() 
 END;
 `);
@@ -179,5 +178,52 @@ INSERT INTO traFacturaXPedidos
 IdPedido)
 VALUES
 (? , ?);`, [lastBillId, order]);
+
+billing.getOrdersToBillAzure = (IdEsquemaRenovacion, FechaFin) => help.d$().query(`
+SELECT DISTINCT
+  P.IdPedido,
+  P.IdPrimerPedido,
+  Distribuidor.IdERP AS Cliente,
+  IFNULL(Distribuidor.Credito, 0) Credito,
+  UsuarioFinal.NombreEmpresa AS Proyecto,
+  F.UEN,
+  P.MonedaPago,
+  22.63 AS TipoCambio,
+  P.IdFormaPago,
+  FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+  FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+          Distribuidor.ZonaImpuesto) AS IVA,
+  P.FechaFin AS Vencimiento,
+  Distribuidor.AgenteMicrosoft AS Agente,
+  '' AS EsquemaRenovacion,
+  '' AS Observaciones,
+  0 AS SinCredito,
+  '' AS FormaPago
+FROM
+  traPedidos P
+      INNER JOIN
+  traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+      INNER JOIN
+  traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+      INNER JOIN
+  traFabricantes F ON F.IdFabricante = P.IdFabricante
+      INNER JOIN
+  traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+      AND PD.PedidoAFabricante = 1
+      INNER JOIN
+  traProductos Pro ON Pro.IdProducto = PD.IdProducto
+WHERE
+  P.Facturado = 0
+    AND P.IdEstatusPedido IN (2 , 3, 4, 5, 8)
+    AND Distribuidor.IdERP IS NOT NULL
+    AND P.PedidoImportado IS NULL
+    AND UsuarioFinal.NombreEmpresa IS NOT NULL
+    AND F.UEN IS NOT NULL
+    AND P.MonedaPago IS NOT NULL
+    AND P.TipoCambio IS NOT NULL
+    AND P.FechaFin
+    AND P.IdEsquemaRenovacion IN (?)
+    AND P.FechaFin = ?;
+`, [IdEsquemaRenovacion, FechaFin]);
 
 module.exports = billing;

@@ -15,4 +15,10 @@ router.put('/bill-all/microsoft', (req, res) => {
     .catch(err => res.send(err));
 });
 
+router.put('/bill-all/azure', (req, res) => {
+  billing.billAzure()
+    .then(result => res.send(result))
+    .catch(err => res.send(err));
+});
+
 module.exports = router;

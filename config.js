@@ -5,6 +5,7 @@ module.exports = {
   TokenERP: 'csD3s@rr01103x73rn0@pi1nt3l1s1s2016',
   IdProductoComisionTuClick: 2118,
   ApiErp: process.env.API_ERP,
+  ApiMS: process.env.API_MS,
   AccessControlAllowOrigin: '*',
   bccMailList: process.env.BCC_MAIL_LIST,
   connectionPool: mySqlModel.createPool({
