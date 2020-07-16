@@ -2,17 +2,20 @@ const auxiliariesFactory = require('./auxiliaries');
 const validation = require('../create-bill/validation');
 const auxiliaries = require('../create-bill/auxiliaries');
 
-const {
+const billAzureOrders = dependecies => {
+  const {
   updateAzureTotal, getOrdersToBill,
-} = auxiliariesFactory();
+} = auxiliariesFactory(dependecies);
 
-const { billOrders } = auxiliaries();
+  const { billOrders } = auxiliaries();
 
-const billAllOrders = () =>
+  const billAllOrders = () =>
   updateAzureTotal()
     .then(() => getOrdersToBill())
     .then(validation.validatePendingBills)
     .then(billOrders)
     .catch(err => err);
+  return billAllOrders;
+};
 
-module.exports = billAllOrders;
+module.exports = billAzureOrders;

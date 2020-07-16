@@ -16,7 +16,13 @@ router.put('/bill-all/microsoft', (req, res) => {
 });
 
 router.put('/bill-all/azure', (req, res) => {
-  billing.billAzure()
+  billing.billAzureGlobal()
+    .then(result => res.send(result))
+    .catch(err => res.send(err));
+});
+
+router.put('/bill-all/azure-plan', (req, res) => {
+  billing.billAzurePlan()
     .then(result => res.send(result))
     .catch(err => res.send(err));
 });
