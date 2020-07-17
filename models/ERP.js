@@ -1,7 +1,7 @@
 const help = require('../helpers/help');
 const pedidos = require('../application/orders');
 const credito = require('./credito');
-const distribuidores = require('./distribuidores');
+const distribuidores = require('../application/clients');
 const productos = require('./productos');
 
 const billing = require('../application/billing');
@@ -15,7 +15,7 @@ ERP.actualizar = () => (
     .then(pedidos.updateOrderStatus)
     .then(exchangeRate.syncronizeExchangeRates)
     .then(credito.actualizarClientes)
-    .then(distribuidores.obtener)
+    .then(distribuidores.actualizar)
     .then(productos.obtener)
     .then(() => help.r$(1, 'ERP Actualizado'))
 );
