@@ -6,7 +6,7 @@ const actualizar = require('./actualizar');
 const start = () => {
   billMsOrders.start();
   actualizar.start();
-  billAWSOrders.start();
+  // billAWSOrders.start();
 };
 module.exports = {
   start,

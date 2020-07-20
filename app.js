@@ -24,7 +24,6 @@ if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
 } else if (argv.env) loadEnvVariables();
 else dotenv.config({ path: './configs/.envDev' });
 
-const Jobs = require('./models/jobs');
 const jobs = require('./application/jobs');
 const expressLogger = require('./helpers/logger').expressLogger;
 const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
@@ -37,7 +36,7 @@ app.use(bodyParser.json());
 app.use(expressLogger);
 app.use(expressConsoleLogger);
 // Inicializador de Jobs
-// jobs.start();
+jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
@@ -77,7 +76,7 @@ app.use('/', updatePaidOrders);
 const port = process.env.PORT || 8088;
 app.listen(port);
 
-logger.info(`api-clicksuscribe running ${port}`);
+logger.info(`api-intelisis-node running ${port}`);
 logger.info('environment:', process.env.ENVIRONMENT);
 
 module.exports = app;
