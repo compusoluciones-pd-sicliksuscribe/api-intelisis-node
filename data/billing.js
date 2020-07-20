@@ -7,8 +7,8 @@ billing.selectPendingOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
 (CASE WHEN (P.IdFabricante = 10)
-	THEN IF(CxE.IdConsola IS NULL, Distribuidor.NombreEmpresa, 
-		IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
+THEN IF(CxE.IdConsola IS NULL, Distribuidor.NombreEmpresa, 
+IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
     ELSE  UsuarioFinal.NombreEmpresa
 END)
  AS Proyecto,
@@ -23,10 +23,10 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
   ELSE Distribuidor.AgenteMicrosoft
 END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
-     WHEN (P.IdFabricante = 10) THEN 'Mensual AWS'
+  WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
 ELSE '' END AS EsquemaRenovacion,
 (CASE
-    WHEN (P.IdFabricante = 10 ) THEN IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola)
+    WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
     When (P.IdFabricante != 10) THEN ''
 END) AS Observaciones
 FROM traPedidos P
@@ -84,6 +84,81 @@ AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoPr
 WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
 END;`).then(res => res.data);
 
+billing.selectPendingAWSOrdersToBill = () => help.d$().query(`
+SELECT DISTINCT
+    P.IdPedido,
+    P.IdPrimerPedido,
+    Distribuidor.IdERP AS Cliente,
+    IFNULL(Distribuidor.Credito, 0) Credito,
+    (CASE
+        WHEN
+            (P.IdFabricante = 10)
+        THEN
+            IF(CxE.IdConsola IS NULL,
+                Distribuidor.NombreEmpresa,
+                IF(CxE.NombreEmpresa IS NULL,
+                    Distribuidor.NombreEmpresa,
+                    CxE.NombreEmpresa))
+        ELSE UsuarioFinal.NombreEmpresa
+    END) AS Proyecto,
+    F.UEN,
+    P.MonedaPago,
+    P.TipoCambio,
+    P.IdFormaPago,
+    FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+    FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+            Distribuidor.ZonaImpuesto) AS IVA,
+    P.FechaFin AS Vencimiento,
+    Distribuidor.AgenteAmazon AS Agente,
+    CASE
+        WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
+        ELSE ''
+    END AS EsquemaRenovacion,
+    (CASE
+        WHEN
+            (P.IdFabricante = 10)
+        THEN
+            CONCAT(Serv.IdConsola,
+                    ' - ',
+                    IF(ISNULL(Serv.NombreEmpresa),
+                        Distribuidor.NombreEmpresa,
+                        Serv.NombreConsola))
+        WHEN (P.IdFabricante != 10) THEN ''
+    END) AS Observaciones
+FROM
+    traPedidos P
+        INNER JOIN
+    traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+        INNER JOIN
+    traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+        INNER JOIN
+    traFabricantes F ON F.IdFabricante = P.IdFabricante
+        INNER JOIN
+    traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+        AND (PD.Activo = 1 OR PD.PorCancelar = 1)
+        AND PD.PedidoAFabricante = 1
+        INNER JOIN
+    traProductos Pro ON Pro.IdProducto = PD.IdProducto
+        LEFT JOIN
+    traPedidosXConsola PxC ON PxC.IdPedido = P.IdPedido
+        LEFT JOIN
+    traServiciosAWS Serv ON Serv.IdConsola = PxC.IdConsola
+        LEFT JOIN
+    traConsolasXEmpresa CxE ON CxE.IdConsola = PxC.IdConsola
+WHERE
+    P.Facturado = 0
+        AND P.IdEstatusPedido IN (2 , 3, 4, 5, 8)
+        AND Distribuidor.IdERP IS NOT NULL
+        AND F.UEN IS NOT NULL
+        AND P.MonedaPago IS NOT NULL
+        AND P.TipoCambio IS NOT NULL
+        AND P.FechaFin IS NOT NULL
+        AND P.IdFormaPago IN (2 , 4)
+        AND P.IdPedidoPadre = 1
+        AND P.IdFabricante = 10
+        AND P.FechaFin <= NOW();
+`);
+
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
       ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
@@ -101,7 +176,11 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     FROM traPedidoDetalles PD
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
-    WHERE PD.IdPedido = ? AND P.IdProducto <> ?;`,
+    WHERE PD.IdPedido = ? AND P.IdProducto <> ?
+    AND CASE
+    WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
+    ELSE PD.PrecioUnitario
+    END;`,
   [ID, IdPedido, IdProductoComisionTuClick]);
 
 billing.selectPendingMsOrderDetail = (ID, IdPedido, TipoCambio) => help.d$().query(`

@@ -22,7 +22,7 @@ distribuidores.obtener = () => {
 };
 
 // Guarda los distribuidores en el marketplace o los actualiza si ya existe
-distribuidores.barrerDistribuidores = (distribuidoresERP) => {
+distribuidores.barrerDistribuidores = distribuidoresERP => {
   const deferred = Q.defer();
   if (distribuidoresERP) {
     for (let i = 0; i < distribuidoresERP.length; i += 1) {
@@ -50,6 +50,7 @@ distribuidores.barrerDistribuidores = (distribuidoresERP) => {
             ContratoAutodeskUF: null,
             DominioMicrosoftUF: null,
             pIdIBMDist: r$.data.IdIBM,
+            pCondicionERP: r$.data.CondicionERP,
           };
           help.d$().callStoredProcedure('traEmpresas_insert', empresa)
             .catch(error => deferred.reject(error));
