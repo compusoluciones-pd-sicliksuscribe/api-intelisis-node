@@ -11,4 +11,6 @@ DB_CONNECTION_LIMIT=15
 
 
 API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
-BCC_MAIL_LIST= josedera@compusoluciones.com; 
+BCC_MAIL_LIST= josedera@compusoluciones.com;osestrad@compusoluciones.com;ncardena@compusoluciones.com;
+
+

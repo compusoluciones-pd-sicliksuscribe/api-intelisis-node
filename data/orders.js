@@ -1,6 +1,4 @@
 const help = require('../helpers/help');
-const SICLIK_ORDENES = require('../configs/databaseSiclickOrdenes');
-const siclik = require('../helpers/gateway')(SICLIK_ORDENES);
 const orders = {};
 
 orders.patch = (fields, IdPedido) => help.d$().update('traPedidos', fields, { IdPedido }).then(data => data).catch(err => err);

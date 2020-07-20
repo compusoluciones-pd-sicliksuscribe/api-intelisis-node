@@ -8,7 +8,7 @@ const getBaseMail = (mailContent, template) => {
     from: 'Click Suscribe CompuSoluciones <clicksuscribe@compusoluciones.com>',
     to: mailContent.address,
     bcc: bccMailList,
-    subject: `${process.env.ENVIRONMENT === 'development' ? '[TEST] ' : ''}${mailContent.subject}`,
+    subject: `${process.env.ENVIRONMENT !== 'production' ? '[TEST] ' : ''}${mailContent.subject}`,
     text: mailContent.subject,
     html: template(mailContent),
     watchHtml: template(mailContent),
