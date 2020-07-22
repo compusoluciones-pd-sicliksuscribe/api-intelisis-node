@@ -127,10 +127,10 @@ const auxiliariesFactory = (dependencies = defaults) => {
   auxiliaries.groupOrdersToBill = async ordersToRenew => {
     const groupedOrders = groupByMergeCandidates(ordersToRenew);
     const mergedOrders = [];
-    const { TipoCambio } = await getExchangeRate(ordersToRenew[0], MICROSOFT);
     const expiration = moment().add(1, 'month').format('YYYY-MM-DD');
     await Promise.all(Object.keys(groupedOrders).map(async key => {
       const currentOrderGroup = groupedOrders[key];
+      const { TipoCambio } = await getExchangeRate(currentOrderGroup[0], MICROSOFT);
       const totalBill = currentOrderGroup.reduce((accumulator, current) => { accumulator += current.Total; return accumulator; }, 0);
       const idOrdersToBill = currentOrderGroup.reduce((accumulator, current) => { accumulator.push(current.IdPedido); return accumulator; }, []);
       const billHeader = buildBillHeader(currentOrderGroup[0], TipoCambio, expiration, totalBill);
