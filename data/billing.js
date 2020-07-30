@@ -188,7 +188,7 @@ SELECT DISTINCT
   UsuarioFinal.NombreEmpresa AS Proyecto,
   F.UEN,
   P.MonedaPago,
-  22.63 AS TipoCambio,
+  P.TipoCambio AS TipoCambio,
   P.IdFormaPago,
   FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
   FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
