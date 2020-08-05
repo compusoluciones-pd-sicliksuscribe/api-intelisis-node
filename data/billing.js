@@ -172,7 +172,11 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
         WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares'
           THEN PD.PrecioUnitario * Ped.TipoCambio
         WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
-          THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio
+          THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
+          CASE
+            WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
+            ELSE 0
+          END AS Descuento
     FROM traPedidoDetalles PD
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
