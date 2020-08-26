@@ -12,7 +12,7 @@ orders.getPrepaidOrdersWithoutBill = IdERP => (
     SELECT sum(fn_CalcularTotalPedido(IdPedido)) * 1.16 AS totalDebt
     FROM traPedidos P
     INNER JOIN traEmpresas dist on dist.IdEmpresa = P.IdEmpresaDistribuidor
-    WHERE IdERP = ? AND IdFormaPago = 4 and IdEstatusPedido not in (1,6) and (Facturado != 1 or (P.CargoRealizadoProximoPedido = 1 and Renovado = 0));
+    WHERE IdERP = ? AND IdFormaPago = 4 and IdEstatusPedido not in (1,6) and (Facturado = 0 or (P.CargoRealizadoProximoPedido = 1 and Renovado = 0));
     `, [IdERP])
       .then(result => result.data[0])
 );
