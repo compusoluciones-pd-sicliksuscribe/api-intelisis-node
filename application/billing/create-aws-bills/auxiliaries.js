@@ -47,12 +47,12 @@ const auxiliariesFactory = (dependencies = defaults) => {
       return selectPendingOrderDetail(parsedBill[0].ID, parsedBill[0].IdPedidoMarketPlace)
         .then(validateCommission)
         .then(insertOrderDetails)
-        .then(patch({ Facturado: 2 }, parsedBill[0].IdPedidoMarketPlace));
+        .then(patch({ Facturado: 2, IdFactura: parsedBill[0].ID }, parsedBill[0].IdPedidoMarketPlace));
     }
     return sendNotificationErrorInsertOrder(order);
   };
 
-  const updateOrder = (ID, IdPedido) => patch({ Facturado: 2 }, IdPedido);
+  const updateOrder = (ID, IdPedido) => patch({ Facturado: 2, IdFactura: ID }, IdPedido);
 
   auxiliaries.billOrders = ({ data }) =>
     Promise.all(data.map(async order => {

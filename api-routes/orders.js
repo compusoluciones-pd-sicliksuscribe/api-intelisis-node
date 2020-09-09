@@ -33,5 +33,11 @@ router.put('/update-paid-orders', (req, res) => {
     .catch(err => res.send(err));
 });
 
+router.put('/update-bill-aws', (req, res) => {
+  orders.updateIdBillAWS()
+  .then(result => res.send(result))
+    .catch(err => res.send(err));
+});
+
 module.exports = router;
 

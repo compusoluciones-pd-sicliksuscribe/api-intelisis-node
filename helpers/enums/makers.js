@@ -5,6 +5,7 @@ const makers = {
   COMERCIAPOINT: 6,
   PICKIT: 7,
   COMPUCAMPO: 8,
+  AWS: 10,
 };
 
 module.exports = Object.freeze(makers);
