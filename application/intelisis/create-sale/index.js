@@ -18,6 +18,8 @@ const createSale = params => {
     IdPrimerPedido: params.IdPrimerPedido, // credito
     EsquemaRenovacion: params.EsquemaRenovacion, // credito
     Observaciones: params.Observaciones,
+    FormaPago: params.FormaPago,
+    SinCredito: 0, // solo para aws
   };
 
   const options = {
@@ -30,7 +32,7 @@ const createSale = params => {
   };
 
   return requestPromise(options)
-    .catch((error) => {
+    .catch(error => {
       throw error;
     })
     .then(result => result);

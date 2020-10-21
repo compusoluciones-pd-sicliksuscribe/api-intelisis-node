@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.use(expressLogger);
 app.use(expressConsoleLogger);
 // Inicializador de Jobs
-jobs.start();
+// jobs.start();
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
@@ -71,6 +71,9 @@ app.use('/', prepaidOrderBalance);
 
 const updatePaidOrders = require('./api-routes/orders');
 app.use('/', updatePaidOrders);
+
+const clients = require('./api-routes/clients');
+app.use('/', clients);
 
 // Puerto que corre la API
 const port = process.env.PORT || 8088;

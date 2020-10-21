@@ -3,6 +3,7 @@ const createSaleAWS = require('./create-sale-aws');
 const getSale = require('./get-reference');
 const insertOrderDetail = require('./create-sale-detail');
 const createRP = require('./create-rp');
+const insertBillLog = require('./insert-bill-log');
 
 module.exports = {
   createSale,
@@ -10,4 +11,5 @@ module.exports = {
   getSale,
   insertOrderDetail,
   createRP,
+  insertBillLog,
 };

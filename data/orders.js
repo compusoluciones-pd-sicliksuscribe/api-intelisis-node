@@ -17,4 +17,41 @@ orders.getPrepaidOrdersWithoutBill = IdERP => (
       .then(result => result.data[0])
 );
 
+orders.getOpenPayDetails = IdPedido => (
+  help.d$().query(`
+    SELECT 
+      TarjetaResultIndicator
+    FROM
+      traPedidos
+    WHERE
+      IdPedido = ?
+  `, [IdPedido])
+    .then(result => result.data[0])
+);
+
+orders.getAgenteCXC = IdEmpresa => (
+  help.d$().query(`
+    SELECT 
+      *
+    FROM
+      catContactoCXC
+    WHERE
+      IdEmpresa = ?
+  `, [IdEmpresa])
+    .then(result => result.data[0])
+);
+
+orders.getAgenteXMarca = UEN => (
+  help.d$().query(`
+  SELECT 
+    com.Nombre, com.Correo
+  FROM
+    catCorreosCompusoluciones com
+        INNER JOIN
+    traFabricantes fab ON fab.IdFabricante = com.IdFabricante
+  WHERE
+    fab.UEN = ? AND ContactoOperaciones = 1;
+  `, [UEN]
+)).then(res => res.data);
+
 module.exports = orders;

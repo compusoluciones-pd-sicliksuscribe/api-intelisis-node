@@ -17,6 +17,12 @@ router.put('/bill-all/microsoft', (req, res) => {
 
 router.put('/bill-all/aws', (req, res) => {
   billing.billAWSOrders()
+  .then(result => res.send(result))
+  .catch(err => res.send(err));
+});
+
+router.put('/bill-all/openpay', (req, res) => {
+  billing.billOpenpayOrders()
     .then(result => res.send(result))
     .catch(err => res.send(err));
 });
