@@ -3,7 +3,7 @@ ENVIRONMENT=development
 DB_HOST=10.3.102.75
 DB_USER=root
 DB_PASSWORD=Inn0vaci0n
-DB_NAME=ms1
+DB_NAME=azureJulio
 DB_DATE_STRINGS=date
 DB_DEBUG=false
 DB_SHOW_QUERIES=false
@@ -11,4 +11,5 @@ DB_CONNECTION_LIMIT=15
 
 
 API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
-BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com;
+API_MS=http://localhost:8083/
+BCC_MAIL_LIST= osestrad@compusoluciones.com; clicksuscribe@compusoluciones.com; kelizald@compusoluciones.com;
