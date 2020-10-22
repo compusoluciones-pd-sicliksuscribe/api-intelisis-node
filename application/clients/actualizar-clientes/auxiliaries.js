@@ -39,6 +39,9 @@ const createOrder = () => {
     IdAutodeskDist: client.IdAutodesk,
     ContratoAutodeskUF: null,
     DominioMicrosoftUF: null,
+    pIdIBMDist: client.IdIBM,
+    pCondicionERP: client.CondicionERP,
+
   });
 
   const upsertCXCAgente = async client => {
@@ -46,16 +49,26 @@ const createOrder = () => {
     return insertCXCAgente(client, IdEmpresa);
   };
 
-  const upsertClients = async clientsData => Promise.all(clientsData.map(async client => {
-    const clientBody = buildClientBody(client);
-    return help.d$().callStoredProcedure('traEmpresas_insert', clientBody)
-        .then(() => upsertCXCAgente(client))
-        .catch(error => error);
-  }));
+  const upsertClients = async clientsData => {
+    const updateEnterprises = clientsData.map(async client => {
+      const clientBody = buildClientBody(client);
+      return help.d$().callStoredProcedure('traEmpresas_insert', clientBody)
+          .catch(error => error);
+    });
+    await Promise.all(updateEnterprises);
+    return clientsData;
+  };
+
+  const upsertCXCAgents = async clientsData => {
+    const updateCXCAgents = clientsData.map(async client => upsertCXCAgente(client));
+    await Promise.all(updateCXCAgents);
+    return clientsData;
+  };
 
   return {
     getClients,
     upsertClients,
+    upsertCXCAgents,
   };
 };
 
