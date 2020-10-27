@@ -463,9 +463,10 @@ WHERE
     AND P.MonedaPago IS NOT NULL
     AND P.TipoCambio IS NOT NULL
     AND P.FechaFin
+    AND P.Facturado != 1
     AND P.IdEsquemaRenovacion IN (?)
     AND P.FechaFin = ?
-    AND PD.PrecioUnitario > 1;
+    AND PD.PrecioUnitario > 0.1;
 `, [IdEsquemaRenovacion, FechaFin]);
 
 module.exports = billing;
