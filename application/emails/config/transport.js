@@ -5,7 +5,7 @@ emailerConfig.nodemailerTransport = {
   port: '587',
   auth: {
     user: 'clicksuscribe@compusoluciones.com',
-    pass: 'susCR1b3.CLIc4',
+    pass: 'lzxmtdckymfwwccx',
   },
   secureConnection: false,
   secure: false,
