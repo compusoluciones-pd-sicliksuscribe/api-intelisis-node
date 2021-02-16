@@ -35,8 +35,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(expressLogger);
 app.use(expressConsoleLogger);
-// Inicializador de Jobs
-jobs.start();
+// Inicializador de Jobs´
+if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
+  jobs.start();
+}
 // configuración de la API general
 app.use((req, res, next) => {
   // Website you wish to allow to connect
