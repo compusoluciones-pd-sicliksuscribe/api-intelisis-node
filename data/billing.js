@@ -35,7 +35,7 @@ AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Act
 INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
 INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
 INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
-INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1
+INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1 AND PD.IdProducto != 75 AND PD.ResultadoFabricante1 IS NOT NULL
 INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
 LEFT JOIN traPedidosXConsola PxC on PxC.IdPedido = P.IdPedido
 LEFT JOIN traServiciosAWS Serv on Serv.IdConsola = PxC.IdConsola
@@ -72,7 +72,7 @@ AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Act
 INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
 INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
 INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
-INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1 AND PD.IdProducto != 75
+INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1 AND PD.IdProducto != 75 AND PD.ResultadoFabricante1 IS NOT NULL
 INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
 LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
 WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
