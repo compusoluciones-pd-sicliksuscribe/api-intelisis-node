@@ -61,6 +61,7 @@ productos.barrerProductos = productosERP => {
               IdEsquemaRenovacion: r$.data.IdEsquemaRenovacion,
               IdProductoFabricanteExtra: r$.data.IdProductoFabricanteExtra,
               Especializacion: r$.data.Especializacion,
+              Familia: r$.data.Familia,
               Activo: r$.data.Activo,
               Visible: r$.data.Visible,
               ClaveProdServ: r$.data.ClaveProdServ,
