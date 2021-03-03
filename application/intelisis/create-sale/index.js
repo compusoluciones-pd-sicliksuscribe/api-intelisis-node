@@ -12,6 +12,7 @@ const createSale = params => {
     IVA: params.IVA,
     CreditoDistribuidor: params.Credito,
     IdPedidoMarketPlace: params.IdPedido,
+    OrdenCompra: params.OrdenCompra,
     Proyecto: params.Proyecto,
     Vencimiento: params.Vencimiento,
     Agente: params.Agente,
@@ -19,7 +20,6 @@ const createSale = params => {
     EsquemaRenovacion: params.EsquemaRenovacion, // credito
     Observaciones: params.Observaciones,
   };
-
   const options = {
     method: 'POST',
     uri: config.ApiErp + 'Venta',
