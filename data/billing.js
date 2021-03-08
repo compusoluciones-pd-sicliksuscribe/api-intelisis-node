@@ -24,10 +24,10 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
 END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
   WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
+  WHEN (P.IdFabricante = 2) THEN GROUP_CONCAT(DISTINCT PD.ResultadoFabricante7 ORDER BY PD.IdPedidoDetalle)
 ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
-    WHEN (P.IdFabricante = 2) THEN GROUP_CONCAT(DISTINCT PD.ResultadoFabricante7)
     ELSE ''
 END) AS Observaciones, OC.OrdenCompra
 FROM traPedidos P
