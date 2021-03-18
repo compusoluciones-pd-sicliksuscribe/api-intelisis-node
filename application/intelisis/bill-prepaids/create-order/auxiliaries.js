@@ -13,6 +13,7 @@ const applyClientsBalance = () => {
     IdFormaPago: orders.IdFormaPago,
     UEN: orders.UEN,
     IdPedidoMarketPlace: orders.IdPedido,
+    OrdenCompra: orders.OrdenCompra,
     Referencia: orders.IdPedido,
     IdPrimerPedido: orders.IdPrimerPedido,
     EsquemaRenovacion: orders.EsquemaRenovacion,

@@ -24,11 +24,12 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
 END) AS Agente,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
   WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
+  WHEN (P.IdFabricante = 2) THEN GROUP_CONCAT(DISTINCT PD.ResultadoFabricante7 ORDER BY PD.IdPedidoDetalle SEPARATOR ', ')
 ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
-    When (P.IdFabricante != 10) THEN ''
-END) AS Observaciones
+    ELSE ''
+END) AS Observaciones, OC.OrdenCompra
 FROM traPedidos P
 LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
 AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
@@ -41,6 +42,7 @@ LEFT JOIN traPedidosXConsola PxC on PxC.IdPedido = P.IdPedido
 LEFT JOIN traServiciosAWS Serv on Serv.IdConsola = PxC.IdConsola
 LEFT JOIN traConsolasXEmpresa CxE on CxE.IdConsola = PxC.IdConsola
 LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
+LEFT JOIN traOrdenesCompra OC ON OC.IdPedido = P.IdPedido
 WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
 AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
 AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
@@ -50,7 +52,8 @@ AND CASE
   WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
   WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
   WHEN Pro.IdTipoProducto = 1 AND P.IdFabricante = 10 THEN P.FechaFin <= NOW() 
-END;
+END
+GROUP BY PD.IdPedido;
 `);
 
 billing.selectPendingMsOrdersToBill = () => help.d$().query(`SELECT DISTINCT
