@@ -9,8 +9,8 @@ router.put('/bill-all', (req, res) => {
     .catch(err => res.send(err));
 });
 
-router.put('/bill-all/microsoft', (req, res) => {
-  billing.billMsOrders()
+router.put('/bill-all/microsoft/:limit', (req, res) => {
+  billing.billMsOrders(req.params)
     .then(result => res.send(result))
     .catch(err => res.send(err));
 });
