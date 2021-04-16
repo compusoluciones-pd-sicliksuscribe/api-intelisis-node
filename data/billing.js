@@ -57,35 +57,57 @@ GROUP BY PD.IdPedido;
 `);
 
 billing.selectPendingMsOrdersToBill = () => help.d$().query(`SELECT DISTINCT
-P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
-UsuarioFinal.NombreEmpresa AS Proyecto, F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
-fn_CalcularTotalPedido(P.IdPedido) AS Total, 
-fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
-IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
-(CASE
-  WHEN (P.IdFabricante = 2 AND TPP.IdPedidoPadre IS NOT NULL) THEN Distribuidor.AgenteAutodeskRenovacion
-  WHEN (P.IdFabricante = 2 ) THEN Distribuidor.AgenteAutodesk
-  ELSE Distribuidor.AgenteMicrosoft
-END) as Agente,
- P.IdEsquemaRenovacion AS EsquemaRenovacion,
-P.IdEmpresaDistribuidor, P.IdEmpresaUsuarioFinal
-FROM traPedidos P
-LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
-AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END
-INNER JOIN traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor 
-INNER JOIN traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal 
-INNER JOIN traFabricantes F ON F.IdFabricante = P.IdFabricante 
-INNER JOIN traPedidoDetalles PD ON PD.IdPedido = P.IdPedido AND (PD.Activo = 1 OR PD.PorCancelar = 1) AND PD.PedidoAFabricante = 1 AND PD.IdProducto != 75 AND PD.ResultadoFabricante1 IS NOT NULL
-INNER JOIN traProductos Pro ON Pro.IdProducto = PD.IdProducto
-LEFT JOIN traPedidosPadre TPP ON TPP.IdPedido=P.IdPedido
-WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
-AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
-AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
-AND P.IdFormaPago != 4
-AND P.IdPedidoPadre = 1 and P.IdEsquemaRenovacion = 1 and IdFormaPago = 2 
-AND CASE WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
-WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
-END;`).then(res => res.data);
+P.IdPedido,
+P.IdPrimerPedido,
+Distribuidor.IdERP AS Cliente,
+IFNULL(Distribuidor.Credito, 0) Credito,
+UsuarioFinal.NombreEmpresa AS Proyecto,
+F.UEN,
+P.MonedaPago,
+P.TipoCambio,
+P.IdFormaPago,
+FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+        Distribuidor.ZonaImpuesto) AS IVA,
+P.FechaFin AS Vencimiento,
+Distribuidor.AgenteMicrosoft AS Agente,
+P.IdEsquemaRenovacion AS EsquemaRenovacion,
+P.IdEmpresaDistribuidor,
+P.IdEmpresaUsuarioFinal
+FROM
+traPedidos P
+    INNER JOIN
+traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+    INNER JOIN
+traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+    INNER JOIN
+traFabricantes F ON F.IdFabricante = P.IdFabricante
+    INNER JOIN
+traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+    AND (PD.Activo = 1 OR PD.PorCancelar = 1)
+    AND PD.PedidoAFabricante = 1
+    AND PD.IdProducto != 75
+    AND PD.ResultadoFabricante1 IS NOT NULL
+    INNER JOIN
+traProductos Pro ON Pro.IdProducto = PD.IdProducto
+    LEFT JOIN
+traPedidosPadre TPP ON TPP.IdPedido = P.IdPedido
+WHERE
+P.Facturado = 0
+    AND P.IdEstatusPedido IN (2 , 3, 4, 5, 8)
+    AND Distribuidor.IdERP IS NOT NULL
+    AND P.PedidoImportado IS NULL
+    AND UsuarioFinal.NombreEmpresa IS NOT NULL
+    AND F.UEN IS NOT NULL
+    AND P.MonedaPago IS NOT NULL
+    AND P.TipoCambio IS NOT NULL
+    AND P.IdFormaPago != 4
+    AND P.IdPedidoPadre = 1
+    AND P.IdEsquemaRenovacion = 1
+    AND IdFormaPago = 2
+    AND Pro.IdTipoProducto != 3
+    AND P.FechaInicio <= Date_format(now(),'%Y-%m-22')
+  AND P.FechaFin IS NOT NULL;`).then(res => res.data);
 
 billing.selectPendingAWSOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
