@@ -125,8 +125,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
   };
 
   auxiliaries.groupOrdersToBill = async (ordersToRenew, limit) => {
-    const limitOrders = ordersToRenew.slice(0, limit);
-    const groupedOrders = groupByMergeCandidates(limitOrders);
+    const groupedOrders = groupByMergeCandidates(ordersToRenew);
     const mergedOrders = [];
     const expiration = moment().add(1, 'month').format('YYYY-MM-DD');
     await Promise.all(Object.keys(groupedOrders).map(async key => {
@@ -139,7 +138,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
       const completeBillData = Object.assign({}, billHeader, { details: billDetail }, { idOrdersToBill });
       mergedOrders.push(completeBillData);
     }));
-    return mergedOrders;
+    return mergedOrders.slice(0, limit);
   };
 
   return auxiliaries;
