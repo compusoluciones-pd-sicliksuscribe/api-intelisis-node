@@ -124,7 +124,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
     return mergedOrders;
   };
 
-  auxiliaries.groupOrdersToBill = async ordersToRenew => {
+  auxiliaries.groupOrdersToBill = async (ordersToRenew, limit) => {
     const groupedOrders = groupByMergeCandidates(ordersToRenew);
     const mergedOrders = [];
     const expiration = moment().add(1, 'month').format('YYYY-MM-DD');
@@ -138,7 +138,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
       const completeBillData = Object.assign({}, billHeader, { details: billDetail }, { idOrdersToBill });
       mergedOrders.push(completeBillData);
     }));
-    return mergedOrders;
+    return mergedOrders.slice(0, limit);
   };
 
   return auxiliaries;

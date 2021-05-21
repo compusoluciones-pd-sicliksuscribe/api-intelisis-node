@@ -6,10 +6,10 @@ const {
   insertBillDetails, updateOrders,
 } = auxiliariesFactory();
 
-const billAllOrders = () =>
+const billAllOrders = ({ limit }) =>
   selectPendingMsOrders()
       .then(validation.validatePendingBills)
-      .then(groupOrdersToBill)
+      .then(orders => groupOrdersToBill(orders, limit))
       .then(completeBillData)
       .then(insertOrdersToBill)
       .then(billOrders)
