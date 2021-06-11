@@ -201,10 +201,12 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
           CASE
             WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
             ELSE 0
-          END AS Descuento
+          END AS Descuento,
+    PP.Meses AS DescripcionExtra
     FROM traPedidoDetalles PD
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
+    LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
     WHERE PD.IdPedido = ? AND P.IdProducto <> ?
     AND CASE
     WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
