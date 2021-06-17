@@ -3,9 +3,19 @@ const orders = {};
 
 orders.patch = (fields, IdPedido) => help.d$().update('traPedidos', fields, { IdPedido }).then(data => data).catch(err => err);
 
-orders.updatePaidOrders = ({ ID }) => help.d$().query(`
+orders.updatePaidOrders = ID => help.d$().query(`
 UPDATE traPedidos SET IdEstatusPedido = 3 WHERE IdFactura = ? AND IdEstatusPedido in (2)`, [ID]);
 
+orders.getPendingPayBill = () => (
+  help.d$().query(`
+  SELECT 
+    IdPedido, IdFactura
+  FROM
+      traPedidos
+  WHERE
+      IdEstatusPedido NOT IN (1 , 3, 6)
+          AND IdFactura > 1;`)
+        .then(result => result.data));
 
 orders.getPrepaidOrdersWithoutBill = IdERP => (
     help.d$().query(`

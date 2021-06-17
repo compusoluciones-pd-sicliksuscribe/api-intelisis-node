@@ -18,9 +18,16 @@ const auxiliariesFactory = (dependencies = defaults) => {
     },
   };
 
-  auxiliaries.updateOrders = ordersPaid => Promise.all(ordersPaid.map(updatePaidOrders));
+  auxiliaries.paidOrders = async ordersPending => {
+    const billComplete = await requestPromise(options).then(result => JSON.parse(result));
+    ordersPending.map(async item => {
+      const validate = await billComplete.find(element => element.ID === item.IdFactura);
+      if (validate) { updatePaidOrders(item.IdFactura); }
+    });
+    return 'Ordenes actualizadas';
+  };
 
-  auxiliaries.selectPaidOrders = () => requestPromise(options).then(result => JSON.parse(result));
+  auxiliaries.pendingPay = () => orders.getPendingPayBill();
 
   return auxiliaries;
 };
