@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 'use strict';
 const { CronJob } = require('cron');
-const logger = require('../helpers/logger').debugLogger;
+const logger = require('../../helpers/logger').debugLogger;
 const orders = require('../../application/orders');
 const credit = require('../../models/credito');
 const enterprise = require('../../models/distribuidores');
