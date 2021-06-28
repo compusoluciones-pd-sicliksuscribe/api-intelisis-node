@@ -12,9 +12,7 @@ const onTick = () => {
 const scheduleJob = () => {
   const jobConfig = {
     cronTime: '30 * * * *', // corre cada 30 minutos
-    // cronTime: '1 * * * *', // corre cada minuto, pruebas
     onTick,
-    runOnInit: process.env.TEST,
   };
 
   return new CronJob(jobConfig);

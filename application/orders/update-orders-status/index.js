@@ -2,13 +2,13 @@ const auxiliariesFactory = require('./auxiliaries');
 const throwCustomError = require('../../../helpers/factories/errorFactory');
 
 const {
-    selectPaidOrders,
-    updateOrders,
+    paidOrders,
+    pendingPay,
 } = auxiliariesFactory();
 
 const updatePaidOrders = () =>
-  selectPaidOrders()
-    .then(updateOrders)
+  pendingPay()
+    .then(paidOrders)
     .catch(error => throwCustomError(error));
 
 module.exports = updatePaidOrders;

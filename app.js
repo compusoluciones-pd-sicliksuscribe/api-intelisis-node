@@ -24,7 +24,7 @@ if (process.env.PRODUCTION === 1 || process.env.PRODUCTION === '1') {
 } else if (argv.env) loadEnvVariables();
 else dotenv.config({ path: './configs/.envDev' });
 
-const jobs = require('./application/jobs');
+const jobs = require('./application/jobs/update-functions');
 const expressLogger = require('./helpers/logger').expressLogger;
 const expressConsoleLogger = require('./helpers/logger').expressConsoleLogger;
 const logger = require('./helpers/logger').debugLogger;
