@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict';
 const { CronJob } = require('cron');
 const logger = require('../helpers/logger').debugLogger;
