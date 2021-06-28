@@ -10,6 +10,7 @@ const applyClientsBalanceDetails = () => {
     Precio: orderDetail.Precio,
     RenglonID: orderDetail.RenglonID,
     Renglon: orderDetail.Renglon,
+    DescripcionExtra: orderDetail.DescripcionExtra,
   });
 
   const getOptions = orderDetail => ({
