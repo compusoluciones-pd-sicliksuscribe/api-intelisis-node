@@ -84,7 +84,6 @@ traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
 traFabricantes F ON F.IdFabricante = P.IdFabricante
     INNER JOIN
 traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
-    AND (PD.Activo = 1 OR PD.PorCancelar = 1)
     AND PD.PedidoAFabricante = 1
     AND PD.IdProducto != 75
     AND PD.ResultadoFabricante1 IS NOT NULL
