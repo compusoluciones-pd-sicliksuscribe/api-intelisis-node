@@ -466,7 +466,7 @@ WHERE
     AND P.Facturado != 1
     AND P.IdEsquemaRenovacion IN (?)
     AND P.FechaFin = ?
-    AND PD.PrecioUnitario > 0.1;
-`, [IdEsquemaRenovacion, FechaFin]);
+    AND PD.PrecioUnitario > 0.1
+    LIMIT 20;`, [IdEsquemaRenovacion, FechaFin]);
 
 module.exports = billing;

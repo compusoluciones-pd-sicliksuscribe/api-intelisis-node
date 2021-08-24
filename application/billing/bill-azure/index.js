@@ -10,8 +10,7 @@ const billAzureOrders = dependecies => {
   const { billOrders } = auxiliaries();
 
   const billAllOrders = () =>
-  updateAzureTotal()
-    .then(() => getOrdersToBill())
+  getOrdersToBill()
     .then(validation.validatePendingBills)
     .then(billOrders)
     .catch(err => err);
