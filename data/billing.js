@@ -1,5 +1,6 @@
 const help = require('../helpers/help');
 const { IdProductoComisionTuClick } = require('../config');
+const { AZURE_PLAN } = require('../helpers/enums/renewal-schema-types');
 
 const billing = {};
 
@@ -182,6 +183,52 @@ WHERE
         AND P.IdFabricante = 10
         AND P.FechaFin <= NOW();
 `);
+billing.getOrdersToBillAzurePlan = () => help.d$().query(`
+SELECT DISTINCT
+  P.IdPedido,
+  P.IdPrimerPedido,
+  Distribuidor.IdERP AS Cliente,
+  IFNULL(Distribuidor.Credito, 0) Credito,
+  UsuarioFinal.NombreEmpresa AS Proyecto,
+  F.UEN,
+  P.MonedaPago,
+  P.TipoCambio AS TipoCambio,
+  P.IdFormaPago,
+  FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+  FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+          Distribuidor.ZonaImpuesto) AS IVA,
+  P.FechaFin AS Vencimiento,
+  Distribuidor.AgenteMicrosoft AS Agente,
+  '' AS EsquemaRenovacion,
+  '' AS Observaciones,
+  0 AS SinCredito,
+  '' AS FormaPago
+FROM
+  traPedidos P
+      INNER JOIN
+  traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+      INNER JOIN
+  traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+      INNER JOIN
+  traFabricantes F ON F.IdFabricante = P.IdFabricante
+      INNER JOIN
+  traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+      AND PD.PedidoAFabricante = 1
+      INNER JOIN
+  traProductos Pro ON Pro.IdProducto = PD.IdProducto
+WHERE
+  P.Facturado = 0
+    AND P.IdEstatusPedido NOT IN (1, 6)
+    AND Distribuidor.IdERP IS NOT NULL
+    AND P.PedidoImportado IS NULL
+    AND UsuarioFinal.NombreEmpresa IS NOT NULL
+    AND F.UEN IS NOT NULL
+    AND P.MonedaPago IS NOT NULL
+    AND P.TipoCambio IS NOT NULL
+    AND P.Facturado != 1
+    AND P.IdEsquemaRenovacion IN (?)
+    AND P.FechaFin = Date_format(now(),'%Y-%m-06')
+    AND PD.PrecioUnitario > 0.1;`, [AZURE_PLAN]).then(res => res.data);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
