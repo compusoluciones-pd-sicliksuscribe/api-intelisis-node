@@ -228,7 +228,7 @@ WHERE
     AND P.Facturado != 1
     AND P.IdEsquemaRenovacion IN (?)
     AND P.FechaFin = Date_format(now(),'%Y-%m-06')
-    AND PD.PrecioUnitario > 0.1;`, [AZURE_PLAN]).then(res => res.data);
+    AND PD.PrecioUnitario > 0.1;`, [AZURE_PLAN]);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 

@@ -7,7 +7,7 @@ const auxiliariesFactory = () => {
 
   auxiliaries.getOrdersToBill = async () => {
     const ordersResult = await getOrdersToBillAzurePlan();
-    if (!ordersResult.length) throwCustomError('No hay ordenes Azure Plan para facturar');
+    if (!ordersResult.data.length) throwCustomError('No hay ordenes Azure Plan para facturar');
     return ordersResult;
   };
 
