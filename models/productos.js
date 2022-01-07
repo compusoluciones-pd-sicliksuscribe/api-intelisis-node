@@ -66,6 +66,7 @@ productos.barrerProductos = productosERP => {
               Visible: r$.data.Visible,
               ClaveProdServ: r$.data.ClaveProdServ,
               ClaveUnidad: r$.data.ClaveUnidad,
+              SwitchType: r$.data.SwitchType,
             })
             .catch(error => deferred.reject(error))
             .done(result => deferred.resolve(result));
