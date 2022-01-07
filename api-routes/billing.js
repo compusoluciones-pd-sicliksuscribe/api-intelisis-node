@@ -21,4 +21,10 @@ router.put('/bill-all/aws', (req, res) => {
     .catch(err => res.send(err));
 });
 
+router.put('/bill-all/azure-plan', (req, res) => {
+  billing.billAzurePlanOrders()
+    .then(result => res.send(result))
+    .catch(err => res.send(err));
+});
+
 module.exports = router;
