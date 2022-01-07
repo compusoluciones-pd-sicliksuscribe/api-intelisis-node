@@ -181,8 +181,8 @@ WHERE
         AND P.IdFormaPago IN (2 , 4)
         AND P.IdPedidoPadre = 1
         AND P.IdFabricante = 10
-        AND P.FechaFin <= NOW();
-`);
+        AND P.FechaFin <= NOW();`);
+
 billing.getOrdersToBillAzurePlan = () => help.d$().query(`
 SELECT DISTINCT
   P.IdPedido,
@@ -228,7 +228,8 @@ WHERE
     AND P.Facturado != 1
     AND P.IdEsquemaRenovacion IN (?)
     AND P.FechaFin = Date_format(now(),'%Y-%m-06')
-    AND PD.PrecioUnitario > 0.1;`, [AZURE_PLAN]);
+    AND PD.PrecioUnitario > 0.1
+    LIMIT 20;`, [AZURE_PLAN]);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
