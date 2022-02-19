@@ -30,7 +30,7 @@ ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
     ELSE ''
-END) AS Observaciones, OC.OrdenCompra
+END) AS Observaciones, OC.OrdenCompra, UsuarioFinal.RFC as UfRFC
 FROM traPedidos P
 LEFT JOIN traContratoAutodesk contrato ON contrato.IdContrato = P.IdContrato
 AND CASE WHEN contrato.Activo = 0 THEN contrato.PorActivar = 1 ELSE contrato.Activo = 1 END

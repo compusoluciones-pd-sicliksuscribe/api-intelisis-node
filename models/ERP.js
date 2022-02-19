@@ -13,12 +13,12 @@ const ERP = {};
 // Mando a llamar todas las funciones de este modelo y regreso promesa
 ERP.actualizar = () => (
    billing.billOrders()
-     .then(pedidos.updateOrderStatus)
-     .then(exchangeRate.syncronizeExchangeRates)
-     .then(credito.actualizarClientes)
-     .then(distribuidores.obtener)
-     .then(productos.obtener)
-     .then(getPrepaid)
+    //  .then(pedidos.updateOrderStatus)
+    //  .then(exchangeRate.syncronizeExchangeRates)
+    //  .then(credito.actualizarClientes)
+    //  .then(distribuidores.obtener)
+    //  .then(productos.obtener)
+    //  .then(getPrepaid)
     .then(() => help.r$(1, 'ERP Actualizado'))
 );
 
