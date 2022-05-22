@@ -23,7 +23,9 @@ IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
   WHEN (P.IdFabricante = 10 ) THEN Distribuidor.AgenteAmazon
   ELSE Distribuidor.AgenteMicrosoft
 END) AS Agente,
-CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual Microsoft'
+CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 1) THEN 'Mensual'
+  WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual'
+  WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 9) THEN 'Anual con facturación mensual'
   WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
   WHEN (P.IdFabricante = 2) THEN GROUP_CONCAT(DISTINCT PD.ResultadoFabricante7 ORDER BY PD.IdPedidoDetalle SEPARATOR ', ')
 ELSE '' END AS EsquemaRenovacion,
