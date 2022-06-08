@@ -52,7 +52,7 @@ AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.Fecha
 AND P.IdFormaPago != 4
 AND P.IdEsquemaRenovacion != 8
 AND P.IdPedidoPadre is null
-AND PD.ResultadoFabricante7 != 'RENEWAL'
+AND (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 != 'RENEWAL')
 AND CASE
   WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
   WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
