@@ -11,6 +11,7 @@ const insertOrderDetail = orderDetail => {
     RenglonID: orderDetail.RenglonID,
     Renglon: orderDetail.Renglon,
     DescripcionExtra: orderDetail.DescripcionExtra,
+    DescuentoSP: orderDetail.DescuentoSP,
   };
 
   const options = {
