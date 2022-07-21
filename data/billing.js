@@ -356,7 +356,7 @@ SELECT DISTINCT
             Distribuidor.ZonaImpuesto) AS IVA,
     P.FechaFin AS Vencimiento,
     Distribuidor.AgenteMicrosoft AS Agente,
-    P.IdEsquemaRenovacion AS EsquemaRenovacion,
+    'Mensual' AS EsquemaRenovacion,
     P.IdEmpresaDistribuidor,
     P.IdEmpresaUsuarioFinal
 FROM
@@ -408,7 +408,7 @@ SELECT DISTINCT
             Distribuidor.ZonaImpuesto) AS IVA,
     P.FechaFin AS Vencimiento,
     Distribuidor.AgenteMicrosoft AS Agente,
-    P.IdEsquemaRenovacion AS EsquemaRenovacion,
+    'Anual con facturación mensual' AS EsquemaRenovacion,
     P.IdEmpresaDistribuidor,
     P.IdEmpresaUsuarioFinal
 FROM
