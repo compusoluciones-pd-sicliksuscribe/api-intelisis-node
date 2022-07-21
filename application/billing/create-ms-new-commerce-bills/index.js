@@ -6,8 +6,8 @@ const {
   insertBillDetails, updateOrders,
 } = auxiliariesFactory();
 
-const billNCEOrders = ({ limit }) =>
-  selectPendingMsNCEOrders()
+const billNCEOrders = ({ limit, renovationType }) =>
+  selectPendingMsNCEOrders(renovationType)
       .then(validation.validatePendingBills)
       .then(orders => groupOrdersToBill(orders, limit))
       .then(completeBillData)

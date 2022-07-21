@@ -6,6 +6,8 @@ const intelisis = require('../../intelisis');
 const ordersData = require('../../../data/orders');
 const { ON_DEMAND } = require('../../../helpers/enums/product-types');
 const { MICROSOFT } = require('../../../helpers/enums/makers');
+const { MONTHLY } = require('../../../helpers/enums/renewal-schema-types');
+
 const { sendNotificationErrorInsertOrder, sendNotificationErrorInsertOrderDetails } = require('../../emails/');
 const defaults = {
   billing: billingData,
@@ -15,7 +17,7 @@ const defaults = {
 const auxiliariesFactory = (dependencies = defaults) => {
   const { billing, orders } = dependencies;
   const {
-    selectPendingMsNCEOrdersToBill, selectPendingMsOrderDetail, getExchangeRate, getLastBillId, insertOrderToBill,
+    selectPendingMsNCEMonthlyOrdersToBill, selectPendingMsNCEAnnualMonthlyOrdersToBill, selectPendingMsOrderDetail, getExchangeRate, getLastBillId, insertOrderToBill,
   } = billing;
 
   const { patch } = orders;
@@ -25,8 +27,18 @@ const auxiliariesFactory = (dependencies = defaults) => {
 
   const auxiliaries = {};
 
-  auxiliaries.selectPendingMsNCEOrders = () => selectPendingMsNCEOrdersToBill()
-    .then(res => (res.length ? res : throwCustomError('Sin ordenes por facturar')));
+  auxiliaries.selectPendingMsNCEOrders = renovationType => {
+    console.log(renovationType);
+    if (renovationType == MONTHLY) {
+     return selectPendingMsNCEMonthlyOrdersToBill()
+      .then(res => (res.length ? res : throwCustomError('Sin ordenes mensuales por facturar')));
+      
+    } else {
+      return selectPendingMsNCEAnnualMonthlyOrdersToBill()
+      .then(res => (res.length ? res : throwCustomError('Sin ordenes anuales con facturación por facturar')));
+    }
+    
+  }
 
   const verifyIfBillExist = order => intelisis.getSale(order.IdPedido);
 

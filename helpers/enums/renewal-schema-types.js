@@ -7,6 +7,7 @@ const renovationsTypes = {
   TRIAL: 6,
   SEMESTER: 7,
   AZURE_PLAN: 8,
+  ANNUAL_MONTHLY: 9,
 };
 
 module.exports = Object.freeze(renovationsTypes);

@@ -340,7 +340,7 @@ IdPedido)
 VALUES
 (? , ?);`, [lastBillId, order]);
 
-billing.selectPendingMsNCEOrdersToBill = () => help.d$().query(`
+billing.selectPendingMsNCEMonthlyOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
     P.IdPedido,
     P.IdPrimerPedido,
@@ -370,7 +370,6 @@ FROM
         INNER JOIN
     traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
         AND PD.PedidoAFabricante = 1
-        AND PD.IdProducto != 75
         AND PD.ResultadoFabricante1 IS NOT NULL
         INNER JOIN
     traProductos Pro ON Pro.IdProducto = PD.IdProducto
@@ -385,12 +384,67 @@ WHERE
         AND P.MonedaPago IS NOT NULL
         AND P.TipoCambio IS NOT NULL
         AND P.IdFormaPago != 4
-        AND P.IdEsquemaRenovacion IN (1 , 9)
+        AND P.IdEsquemaRenovacion = 1
         AND IdFormaPago = 2
         AND Pro.IdTipoProducto != 3
         AND P.FechaInicio <= DATE_FORMAT(NOW(), '%Y-%m-06')
         AND P.FechaFin IS NOT NULL
         AND IF(P.IdEsquemaRenovacion = 1 && P.Facturado = 0 && PD.ResultadoFabricante7 = 'RENEWAL', 1, 0 ) = 1
+        `).then(res => res.data);
+
+billing.selectPendingMsNCEAnnualMonthlyOrdersToBill = () => help.d$().query(`
+SELECT DISTINCT
+    P.IdPedido,
+    P.IdPrimerPedido,
+    Distribuidor.IdERP AS Cliente,
+    IFNULL(Distribuidor.Credito, 0) Credito,
+    UsuarioFinal.NombreEmpresa AS Proyecto,
+    F.UEN,
+    P.MonedaPago,
+    P.TipoCambio,
+    P.IdFormaPago,
+    FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+    FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+            Distribuidor.ZonaImpuesto) AS IVA,
+    P.FechaFin AS Vencimiento,
+    Distribuidor.AgenteMicrosoft AS Agente,
+    P.IdEsquemaRenovacion AS EsquemaRenovacion,
+    P.IdEmpresaDistribuidor,
+    P.IdEmpresaUsuarioFinal
+FROM
+    traPedidos P
+        INNER JOIN
+    traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+        INNER JOIN
+    traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+        INNER JOIN
+    traFabricantes F ON F.IdFabricante = P.IdFabricante
+        INNER JOIN
+    traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+        AND PD.Activo = 1
+        AND PD.PedidoAFabricante = 1
+        AND PD.ResultadoFabricante1 IS NOT NULL
+        INNER JOIN
+    traProductos Pro ON Pro.IdProducto = PD.IdProducto
+WHERE
+    P.IdEstatusPedido IN (2 , 3)
+        AND Distribuidor.IdERP IS NOT NULL
+        AND P.PedidoImportado IS NULL
+        AND P.Facturado = 1
+        AND UsuarioFinal.NombreEmpresa IS NOT NULL
+        AND F.UEN IS NOT NULL
+        AND P.MonedaPago IS NOT NULL
+        AND P.TipoCambio IS NOT NULL
+        AND P.IdEsquemaRenovacion = 9
+        AND IdFormaPago = 2
+        AND Pro.IdTipoProducto != 3
+        AND P.FechaFin IS NOT NULL
+        AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaInicio, '%m')
+        AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaFin, '%m')
+        AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6, 1, IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'), 1, 0 )) = 1
+        AND P.IdPedido in (124377,
+            124376,
+            124378)
         `).then(res => res.data);
 
 module.exports = billing;
