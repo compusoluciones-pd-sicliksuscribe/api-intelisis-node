@@ -442,9 +442,6 @@ WHERE
         AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaInicio, '%m')
         AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaFin, '%m')
         AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6, 1, IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'), 1, 0 )) = 1
-        AND P.IdPedido in (124377,
-            124376,
-            124378)
         `).then(res => res.data);
 
 module.exports = billing;
