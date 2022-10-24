@@ -17,7 +17,7 @@ const defaults = {
 const auxiliariesFactory = (dependencies = defaults) => {
   const { billing, orders } = dependencies;
   const {
-    selectPendingMsNCEMonthlyOrdersToBill, selectPendingMsNCEAnnualMonthlyOrdersToBill, selectPendingMsOrderDetail, getExchangeRate, getLastBillId, insertOrderToBill,
+    selectPendingMsNCEMonthlyOrdersToBill, selectPendingMsNCEAnnualMonthlyOrdersToBill, selectPendingMsOrderDetail, getExchangeRate, getLastBillId, insertOrderToBill, insertActualBill,
   } = billing;
 
   const { patch } = orders;
@@ -28,7 +28,6 @@ const auxiliariesFactory = (dependencies = defaults) => {
   const auxiliaries = {};
 
   auxiliaries.selectPendingMsNCEOrders = renovationType => {
-    console.log(renovationType);
     if (renovationType == MONTHLY) {
      return selectPendingMsNCEMonthlyOrdersToBill()
       .then(res => (res.length ? res : throwCustomError('Sin ordenes mensuales por facturar')));
@@ -120,6 +119,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
   auxiliaries.insertOrdersToBill = async ordersToInsert => Promise.all(ordersToInsert.map(order => {
     order.idOrdersToBill.map(async item => {
       await insertOrderToBill(item, order.IdPedido);
+      await insertActualBill(item, order.IdPedido);
       return item;
     });
     return order;
