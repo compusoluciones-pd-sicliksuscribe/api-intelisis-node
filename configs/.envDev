@@ -10,5 +10,5 @@ DB_SHOW_QUERIES=false
 DB_CONNECTION_LIMIT=15
 
 
-API_ERP=http://localhost:54374/
+API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
 BCC_MAIL_LIST= clicksuscribe@compusoluciones.com

@@ -27,4 +27,10 @@ router.put('/bill-all/azure-plan', (req, res) => {
     .catch(err => res.send(err));
 });
 
+router.put('/bill-all/microsoftNCE/:limit/:renovationType', (req, res) => {
+  billing.billMsNCEOrders(req.params)
+    .then(result => res.send(result))
+    .catch(err => res.send(err));
+});
+
 module.exports = router;

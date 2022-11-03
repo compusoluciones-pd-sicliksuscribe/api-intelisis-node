@@ -236,60 +236,62 @@ WHERE
     LIMIT 20;`, [AZURE_PLAN]);
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
-SELECT 
-  ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
-  CASE WHEN P.IdFabricante = 5
-    THEN 1
-    ELSE PD.Cantidad
-  END AS Cantidad,
-  CASE
-    WHEN PD.MonedaPrecio = Ped.MonedaPago
-      THEN PD.PrecioUnitario
-    WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares'
-      THEN PD.PrecioUnitario * Ped.TipoCambio
-    WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
-      THEN PD.PrecioUnitario / Ped.TipoCambio 
-  END AS Precio,
-  CASE
-    WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
-    ELSE 0
-  END AS Descuento,
-  PP.Meses AS DescripcionExtra,
-  CASE WHEN SP.Aprobado = 1
-    THEN PD.PorcentajeDescuentoProxima
-    ELSE 0
-  END AS DescuentoSP
-FROM traPedidoDetalles PD
-INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
-INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
-LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
-LEFT JOIN traSPAutodesk SP ON SP.IdPedido = PD.IdPedido
-WHERE PD.IdPedido = ? AND P.IdProducto <> ?
-  AND CASE
+    SELECT 
+      ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
+      CASE WHEN P.IdFabricante = 5
+      THEN 1
+      ELSE PD.Cantidad
+    END AS Cantidad,
+      CASE
+        WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion != 9
+            THEN PD.PrecioUnitario
+        WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion = 9
+            THEN PD.PrecioRenovacion
+        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion != 9
+            THEN PD.PrecioUnitario * Ped.TipoCambio
+        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion = 9
+            THEN PD.PrecioRenovacion * Ped.TipoCambio
+        WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
+            THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
+          CASE
+            WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
+            ELSE 0
+          END AS Descuento,
+    PP.Meses AS DescripcionExtra
+    FROM traPedidoDetalles PD
+    INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
+    INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
+    LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
+    WHERE PD.IdPedido = ? AND P.IdProducto <> ?
+    AND CASE
     WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
     ELSE PD.PrecioUnitario
   END;`,
   [ID, IdPedido, IdProductoComisionTuClick]);
 
 billing.selectPendingMsOrderDetail = (ID, IdPedido, TipoCambio) => help.d$().query(`
-  SELECT 
-    ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
-    CASE WHEN P.IdFabricante = 5
-    THEN 1
-    ELSE PD.Cantidad
-  END AS Cantidad,
-    CASE
-      WHEN PD.MonedaPrecio = Ped.MonedaPago
+SELECT
+? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
+CASE WHEN P.IdFabricante = 5
+THEN 1
+ELSE PD.Cantidad
+END AS Cantidad,
+CASE
+  WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion != 9
         THEN PD.PrecioUnitario
-      WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares'
-        THEN PD.PrecioUnitario * ?
-      WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
-        THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio
-  FROM traPedidoDetalles PD
-  INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
-  INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
-  WHERE PD.IdPedido = ? AND P.IdProducto <> ?;`,
-[ID, TipoCambio, IdPedido, IdProductoComisionTuClick]).then(res => res.data);
+    WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion = 9
+        THEN PD.PrecioRenovacion
+  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion != 9
+    THEN PD.PrecioRenovacion * ?
+  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion = 9
+        THEN PD.PrecioRenovacion * ?
+  WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
+    THEN PD.PrecioRenovacion / Ped.TipoCambio END AS Precio
+FROM traPedidoDetalles PD
+INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
+INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
+WHERE PD.IdPedido = ? AND P.IdProducto <> ?;`,
+[ID, TipoCambio, TipoCambio, IdPedido, IdProductoComisionTuClick]).then(res => res.data);
 
 billing.selectRP = IdPedido => help.d$().query(`
      SELECT IFNULL(TipoCambioRP, 0 ) AS TipoCambioRP FROM traPedidos P 
@@ -346,5 +348,119 @@ INSERT INTO traFacturaXPedidos
 IdPedido)
 VALUES
 (? , ?);`, [lastBillId, order]);
+
+billing.insertActualBill = (order, lastBillId) => help.d$().query(`
+INSERT INTO traFacturacionAnnualMensual
+(IdPedido, IdFactura, MesFactura) 
+VALUES 
+(? , ?, month(now()));`, [order, lastBillId]);
+
+billing.selectPendingMsNCEMonthlyOrdersToBill = () => help.d$().query(`
+SELECT DISTINCT
+    P.IdPedido,
+    P.IdPrimerPedido,
+    Distribuidor.IdERP AS Cliente,
+    IFNULL(Distribuidor.Credito, 0) Credito,
+    UsuarioFinal.NombreEmpresa AS Proyecto,
+    F.UEN,
+    P.MonedaPago,
+    P.TipoCambio,
+    P.IdFormaPago,
+    FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+    FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+            Distribuidor.ZonaImpuesto) AS IVA,
+    P.FechaFin AS Vencimiento,
+    Distribuidor.AgenteMicrosoft AS Agente,
+    'Mensual' AS EsquemaRenovacion,
+    P.IdEmpresaDistribuidor,
+    P.IdEmpresaUsuarioFinal
+FROM
+    traPedidos P
+        INNER JOIN
+    traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+        INNER JOIN
+    traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+        INNER JOIN
+    traFabricantes F ON F.IdFabricante = P.IdFabricante
+        INNER JOIN
+    traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+        AND PD.PedidoAFabricante = 1
+        AND PD.ResultadoFabricante1 IS NOT NULL
+        INNER JOIN
+    traProductos Pro ON Pro.IdProducto = PD.IdProducto
+        LEFT JOIN
+    traPedidosPadre TPP ON TPP.IdPedido = P.IdPedido
+WHERE
+    P.IdEstatusPedido IN (2 , 3)
+        AND Distribuidor.IdERP IS NOT NULL
+        AND P.PedidoImportado IS NULL
+        AND UsuarioFinal.NombreEmpresa IS NOT NULL
+        AND F.UEN IS NOT NULL
+        AND P.MonedaPago IS NOT NULL
+        AND P.TipoCambio IS NOT NULL
+        AND P.IdFormaPago != 4
+        AND P.IdEsquemaRenovacion = 1
+        AND IdFormaPago = 2
+        AND Pro.IdTipoProducto != 3
+        AND P.FechaInicio <= DATE_FORMAT(NOW(), '%Y-%m-06')
+        AND P.FechaFin IS NOT NULL
+        AND IF(P.IdEsquemaRenovacion = 1 && P.Facturado = 0 && PD.ResultadoFabricante7 = 'RENEWAL', 1, 0 ) = 1
+        `).then(res => res.data);
+
+billing.selectPendingMsNCEAnnualMonthlyOrdersToBill = () => help.d$().query(`
+SELECT DISTINCT
+    P.IdPedido,
+    P.IdPrimerPedido,
+    Distribuidor.IdERP AS Cliente,
+    IFNULL(Distribuidor.Credito, 0) Credito,
+    UsuarioFinal.NombreEmpresa AS Proyecto,
+    F.UEN,
+    P.MonedaPago,
+    P.TipoCambio,
+    P.IdFormaPago,
+    FN_CALCULARTOTALPEDIDO(P.IdPedido) AS Total,
+    FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
+            Distribuidor.ZonaImpuesto) AS IVA,
+    P.FechaFin AS Vencimiento,
+    Distribuidor.AgenteMicrosoft AS Agente,
+    'Anual con facturación mensual' AS EsquemaRenovacion,
+    P.IdEmpresaDistribuidor,
+    P.IdEmpresaUsuarioFinal
+FROM
+    traPedidos P
+        INNER JOIN
+    traEmpresas Distribuidor ON Distribuidor.IdEmpresa = P.IdEmpresaDistribuidor
+        INNER JOIN
+    traEmpresas UsuarioFinal ON UsuarioFinal.IdEmpresa = P.IdEmpresaUsuarioFinal
+        INNER JOIN
+    traFabricantes F ON F.IdFabricante = P.IdFabricante
+        INNER JOIN
+    traPedidoDetalles PD ON PD.IdPedido = P.IdPedido
+        AND PD.Activo = 1
+        AND PD.PedidoAFabricante = 1
+        AND PD.ResultadoFabricante1 IS NOT NULL
+        INNER JOIN
+    traProductos Pro ON Pro.IdProducto = PD.IdProducto
+	    LEFT JOIN
+     traFacturacionAnnualMensual FAM ON FAM.IdPedido = P.IdPedido
+AND FAM.MesFactura = month(now())
+WHERE
+    P.IdEstatusPedido IN (2 , 3)
+        AND Distribuidor.IdERP IS NOT NULL
+        AND P.PedidoImportado IS NULL
+        AND P.Facturado = 1
+        AND UsuarioFinal.NombreEmpresa IS NOT NULL
+        AND F.UEN IS NOT NULL
+        AND P.MonedaPago IS NOT NULL
+        AND P.TipoCambio IS NOT NULL
+        AND P.IdEsquemaRenovacion = 9
+        AND IdFormaPago = 2
+        AND Pro.IdTipoProducto != 3
+        AND P.FechaFin IS NOT NULL
+        AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaInicio, '%m')
+        AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaFin, '%m')
+        AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6, 1, IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'), 1, 0 )) = 1
+        AND FAM.MesFactura IS NULL;
+        `).then(res => res.data);
 
 module.exports = billing;
