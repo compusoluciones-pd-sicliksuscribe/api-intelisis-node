@@ -11,6 +11,7 @@ const applyClientsBalanceDetails = () => {
     RenglonID: orderDetail.RenglonID,
     Renglon: orderDetail.Renglon,
     DescripcionExtra: orderDetail.DescripcionExtra,
+    DescuentoSP: orderDetail.DescuentoSP,
   });
 
   const getOptions = orderDetail => ({

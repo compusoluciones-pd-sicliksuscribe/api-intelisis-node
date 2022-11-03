@@ -52,6 +52,7 @@ AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.Fecha
 AND P.IdFormaPago != 4
 AND P.IdEsquemaRenovacion != 8
 AND P.IdPedidoPadre is null
+AND (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 != 'RENEWAL')
 AND CASE
   WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
   WHEN Pro.IdTipoProducto = 3 THEN P.FechaFin <= NOW() AND Pro.IdTipoProducto = 3
@@ -265,7 +266,7 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     AND CASE
     WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
     ELSE PD.PrecioUnitario
-    END;`,
+  END;`,
   [ID, IdPedido, IdProductoComisionTuClick]);
 
 billing.selectPendingMsOrderDetail = (ID, IdPedido, TipoCambio) => help.d$().query(`
