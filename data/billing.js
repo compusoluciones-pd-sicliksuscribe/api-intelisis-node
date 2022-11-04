@@ -277,21 +277,25 @@ THEN 1
 ELSE PD.Cantidad
 END AS Cantidad,
 CASE
-  WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion != 9
+  WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion != 9 and Ped.Facturado = 0
         THEN PD.PrecioUnitario
-    WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion = 9
-        THEN PD.PrecioRenovacion
-  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion != 9
+  WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion = 9 and Ped.Facturado = 0
+    THEN PD.PrecioUnitario
+  WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion = 9 and Ped.Facturado = 1
+    THEN PD.PrecioRenovacion
+  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion != 9 
+    THEN PD.PrecioUnitario * ?
+  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion = 9 and Ped.Facturado = 0
+    THEN PD.PrecioUnitario * ?
+  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion = 9 and Ped.Facturado = 1
     THEN PD.PrecioRenovacion * ?
-  WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion = 9
-        THEN PD.PrecioRenovacion * ?
   WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
     THEN PD.PrecioRenovacion / Ped.TipoCambio END AS Precio
 FROM traPedidoDetalles PD
 INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
 INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
 WHERE PD.IdPedido = ? AND P.IdProducto <> ?;`,
-[ID, TipoCambio, TipoCambio, IdPedido, IdProductoComisionTuClick]).then(res => res.data);
+[ID, TipoCambio, TipoCambio, TipoCambio, IdPedido, IdProductoComisionTuClick]).then(res => res.data);
 
 billing.selectRP = IdPedido => help.d$().query(`
      SELECT IFNULL(TipoCambioRP, 0 ) AS TipoCambioRP FROM traPedidos P 
