@@ -243,14 +243,10 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
       ELSE PD.Cantidad
     END AS Cantidad,
       CASE
-        WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion != 9
+        WHEN PD.MonedaPrecio = Ped.MonedaPago 
             THEN PD.PrecioUnitario
-        WHEN PD.MonedaPrecio = Ped.MonedaPago AND Ped.IdEsquemaRenovacion = 9
-            THEN PD.PrecioRenovacion
-        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion != 9
+        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' 
             THEN PD.PrecioUnitario * Ped.TipoCambio
-        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' AND Ped.IdEsquemaRenovacion = 9
-            THEN PD.PrecioRenovacion * Ped.TipoCambio
         WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
             THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
           CASE
