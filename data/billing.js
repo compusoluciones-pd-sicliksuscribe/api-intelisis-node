@@ -27,7 +27,6 @@ CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 1) THEN 'Mensual'
   WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual'
   WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 9) THEN 'Anual con facturación mensual'
   WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
-  WHEN (P.IdFabricante = 2) THEN GROUP_CONCAT(DISTINCT PD.ResultadoFabricante7 ORDER BY PD.IdPedidoDetalle SEPARATOR ', ')
 ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
@@ -257,7 +256,7 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
             WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
             ELSE 0
           END AS Descuento,
-    PP.Meses AS DescripcionExtra
+    PP.Meses AS DescripcionExtra, PD.ResultadoFabricante7 AS serial_number
     FROM traPedidoDetalles PD
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
