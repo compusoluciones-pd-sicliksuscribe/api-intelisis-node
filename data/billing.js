@@ -53,7 +53,7 @@ AND P.IdFormaPago != 4
 AND P.IdEsquemaRenovacion != 8
 AND P.IdPedidoPadre is null
 AND CASE 
-WHEN P.IdFormaPago = 2 and P.IdFabricante =1 then PD.ResultadoFabricante7 != 'RENEWAL'
+WHEN P.IdFormaPago = 2 and P.IdFabricante =1 then (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 != 'RENEWAL')
 WHEN P.IdFabricante != 1 then PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 != 'RENEWAL'
 WHEN P.IdFormaPago in (1,3) and P.IdFabricante =1 then (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 in ('CREATEORDER','ADDSEAT','COTERM','RENEWAL'))
 END
