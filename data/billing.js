@@ -241,32 +241,39 @@ WHERE
 
 billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
     SELECT 
-      ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
-      CASE WHEN P.IdFabricante = 5
-      THEN 1
-      ELSE PD.Cantidad
+    ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
+    CASE 
+        WHEN P.IdFabricante = 5
+            THEN 1
+        ELSE PD.Cantidad
     END AS Cantidad,
-      CASE
-        WHEN PD.MonedaPrecio = Ped.MonedaPago 
+    CASE 
+        WHEN PD.MonedaPrecio = Ped.MonedaPago
             THEN PD.PrecioUnitario
-        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' 
+        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares'
             THEN PD.PrecioUnitario * Ped.TipoCambio
         WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
             THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
-          CASE
-            WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
-            ELSE 0
-          END AS Descuento,
-    PP.Meses AS DescripcionExtra
+    CASE
+        WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
+        ELSE 0
+    END AS Descuento,
+    PP.Meses AS DescripcionExtra,
+    CASE 
+        WHEN SP.Aprobado = 1
+            THEN PD.PorcentajeDescuentoProxima
+        ELSE 0
+    END AS DescuentoSP
     FROM traPedidoDetalles PD
     INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
     INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
     LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
+    LEFT JOIN traSPAutodesk SP ON SP.IdPedido = PD.IdPedido
     WHERE PD.IdPedido = ? AND P.IdProducto <> ?
     AND CASE
     WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
     ELSE PD.PrecioUnitario
-  END;`,
+    END;`,
   [ID, IdPedido, IdProductoComisionTuClick]);
 
 billing.selectPendingMsOrderDetail = (ID, IdPedido, TipoCambio) => help.d$().query(`
