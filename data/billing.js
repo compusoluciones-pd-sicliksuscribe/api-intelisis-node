@@ -254,10 +254,10 @@ billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
             THEN PD.PrecioUnitario * Ped.TipoCambio
         WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
             THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
-    CASE
-        WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
-        ELSE 0
-    END AS Descuento,
+          CASE
+            WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
+            ELSE 0
+          END AS Descuento,
     PP.Meses AS DescripcionExtra,
     CASE 
         WHEN SP.Aprobado = 1
