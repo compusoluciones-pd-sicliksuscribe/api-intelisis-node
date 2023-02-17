@@ -9,10 +9,10 @@ const {
 const billAllOrders = () =>
   selectPendingOrders()
       .then(validation.validatePendingBills)
-      .then(billOrders)
-      .then(ordersBilled => {
-        logger.info('Resultado', ordersBilled);
-        return 'Ordenes Facturadas';
-      } );
+      .then(billOrders);
+      // .then(ordersBilled => {
+      //   logger.info('Resultado', ordersBilled);
+      //   return 'Ordenes Facturadas';
+      // } );
 
 module.exports = billAllOrders;

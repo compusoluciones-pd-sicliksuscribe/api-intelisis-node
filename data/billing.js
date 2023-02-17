@@ -13,6 +13,9 @@ IF( CxE.NombreEmpresa IS NULL,Distribuidor.NombreEmpresa, CxE.NombreEmpresa))
     ELSE  UsuarioFinal.NombreEmpresa
 END)
  AS Proyecto,
+ P.IdFabricante,
+UsuarioFinal.RFC,
+UsuarioFinal.DominioMicrosoftUF,
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, 
 fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
@@ -27,7 +30,6 @@ CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 1) THEN 'Mensual'
   WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual'
   WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 9) THEN 'Anual con facturación mensual'
   WHEN (P.IdFabricante = 10) THEN PxC.IdGasto
-  WHEN (P.IdFabricante = 2) THEN GROUP_CONCAT(DISTINCT PD.ResultadoFabricante7 ORDER BY PD.IdPedidoDetalle SEPARATOR ', ')
 ELSE '' END AS EsquemaRenovacion,
 (CASE
     WHEN (P.IdFabricante = 10 ) THEN CONCAT(Serv.IdConsola," - ",IF(isnull(Serv.NombreEmpresa), Distribuidor.NombreEmpresa, Serv.NombreConsola))
@@ -49,13 +51,12 @@ LEFT JOIN traOrdenesCompra OC ON OC.IdPedido = P.IdPedido
 WHERE P.Facturado = 0 AND P.IdEstatusPedido IN (2, 3, 4, 5, 8) AND Distribuidor.IdERP IS NOT NULL AND P.PedidoImportado IS NULL
 AND UsuarioFinal.NombreEmpresa IS NOT NULL AND F.UEN IS NOT NULL AND P.MonedaPago IS NOT NULL AND P.TipoCambio IS NOT NULL
 AND CASE WHEN P.IdFabricante = 2 THEN contrato.FechaFin IS NOT NULL ELSE P.FechaFin IS NOT NULL END
-AND P.IdFormaPago != 4
 AND P.IdEsquemaRenovacion != 8
 AND P.IdPedidoPadre is null
 AND CASE 
 WHEN P.IdFormaPago = 2 and P.IdFabricante =1 then PD.ResultadoFabricante7 != 'RENEWAL'
 WHEN P.IdFabricante != 1 then PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 != 'RENEWAL'
-WHEN P.IdFormaPago in (1,3) and P.IdFabricante =1 then (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 in ('CREATEORDER','ADDSEAT','COTERM','RENEWAL'))
+WHEN P.IdFormaPago in (1,3,4) and P.IdFabricante =1 then (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 in ('CREATEORDER','ADDSEAT','COTERM','RENEWAL'))
 END
 AND CASE
   WHEN Pro.IdTipoProducto = 2 OR Pro.IdTipoProducto = 4 THEN Pro.IdTipoProducto != 3
@@ -239,35 +240,44 @@ WHERE
     AND PD.PrecioUnitario > 0.1
     LIMIT 20;`, [AZURE_PLAN]);
 
-billing.selectPendingOrderDetail = (ID, IdPedido) => help.d$().query(`
-    SELECT 
-      ? AS ID, P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
-      CASE WHEN P.IdFabricante = 5
-      THEN 1
-      ELSE PD.Cantidad
-    END AS Cantidad,
-      CASE
-        WHEN PD.MonedaPrecio = Ped.MonedaPago 
-            THEN PD.PrecioUnitario
-        WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares' 
-            THEN PD.PrecioUnitario * Ped.TipoCambio
-        WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
-            THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
-          CASE
-            WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
-            ELSE 0
-          END AS Descuento,
-    PP.Meses AS DescripcionExtra
-    FROM traPedidoDetalles PD
-    INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
-    INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
-    LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
-    WHERE PD.IdPedido = ? AND P.IdProducto <> ?
-    AND CASE
-    WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
-    ELSE PD.PrecioUnitario
-  END;`,
-  [ID, IdPedido, IdProductoComisionTuClick]);
+billing.selectPendingOrderDetail = IdPedido => help.d$().query(`
+SELECT 
+P.IdERP AS Articulo, PD.IdPedido, PD.IdProducto,
+CASE 
+    WHEN P.IdFabricante = 5
+        THEN 1
+    ELSE PD.Cantidad
+END AS Cantidad,
+CASE 
+    WHEN PD.MonedaPrecio = Ped.MonedaPago
+        THEN PD.PrecioUnitario
+    WHEN Ped.MonedaPago = 'Pesos' AND PD.MonedaPrecio = 'Dolares'
+        THEN PD.PrecioUnitario * Ped.TipoCambio
+    WHEN Ped.MonedaPago = 'Dolares' AND PD.MonedaPrecio = 'Pesos'
+        THEN PD.PrecioUnitario / Ped.TipoCambio END AS Precio,
+CASE
+    WHEN P.IdFabricante = 10 THEN PD.PorcentajeDescuento
+    ELSE 0
+END AS Descuento,
+PP.Meses AS DescripcionExtra,
+PD.ResultadoFabricante7 AS serialNumber,
+CASE 
+    WHEN SP.Aprobado = 1
+        THEN PD.PorcentajeDescuentoProxima
+    ELSE 0
+END AS DescuentoSP
+FROM traPedidoDetalles PD
+INNER JOIN traProductos P ON P.IdProducto = PD.IdProducto
+INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
+LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
+LEFT JOIN traSPAutodesk SP ON SP.IdPedido = PD.IdPedido
+WHERE PD.IdPedido = ? AND P.IdProducto <> ?
+AND PD.Activo = 1
+AND CASE
+WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
+ELSE PD.PrecioUnitario
+END;`,
+[IdPedido, IdProductoComisionTuClick]);
 
 billing.selectPendingMsOrderDetail = (ID, IdPedido, TipoCambio) => help.d$().query(`
 SELECT
