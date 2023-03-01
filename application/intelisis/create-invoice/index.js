@@ -1,11 +1,30 @@
+/* eslint-disable no-case-declarations */
 const axios = require('axios');
 const URL = `${process.env.INTELIS_HOST}${process.env.ROUTE_BILLING_VENTA}`;
 const projectByRFC = require('../get-project-by-rfc');
+const payments = require('../../../helpers/enums/payment-types');
+const ordersData = require('../../../data/orders');
 const GENERIC_PROJECT_CLICK = 'SICLIKSUSCRIBE';
 const GENERIC_RFC_NATIONAL = 'XAXX010101000';
 const GENERIC_RFC_FOREIGN = 'XEXX010101000';
-const EMPTY = '';
 
+const paymentMethod = async (paymentType, order) => {
+  let method = '';
+  switch (paymentType) {
+    case 1:
+      const cardType = await ordersData.getPaymentMethod(order);
+      method = cardType.type !== null ? cardType.type : payments.CREDIT_CARD;
+      break;
+    case 3:
+      method = payments.PAYPAL;
+      break;
+    case 4:
+      method = payments.TRANSFER;
+      break;
+    default: method = payments.TRANSFER;
+  }
+  return method;
+};
 
 const formatDetails = async (orderDetails, fabricante) => {
   let index = 0;
@@ -53,7 +72,8 @@ const insertInvoiceIntelisis = async (order, details) => {
     TipoCambio: order.MonedaPago === 'Pesos' ? 1 : order.TipoCambio,
     Cliente: order.Cliente,
     FormaEnvio: 'No Requiere Envio',
-    Condicion: order.IdFormaPago === 2 ? '(Fecha)' : 'CONTADO',
+    Condicion: order.IdFormaPago === 2 ? payments.CREDIT : payments.CASH,
+    FormaPagoTipo: order.IdFormaPago === 2 ? payments.CREDIT : await paymentMethod(order.IdFormaPago, order.IdPedido),
     Proyecto: project,
     Concepto: 'MarketPlace',
     UEN: order.UEN,
@@ -67,8 +87,6 @@ const insertInvoiceIntelisis = async (order, details) => {
     ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto}/${order.DominioMicrosoftUF}` : order.Proyecto,
     VentaD: ventaDetails,
   };
-  console.log(body);
-
   return axios.post(URL, body).then(response => response.data);
 };
 
