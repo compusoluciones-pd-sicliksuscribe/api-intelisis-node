@@ -27,4 +27,20 @@ orders.getPrepaidOrdersWithoutBill = IdERP => (
       .then(result => result.data[0])
 );
 
+orders.getPaymentMethod = order => (
+  help.d$().query(`
+  SELECT 
+    CASE
+        WHEN card_type = 'debito' THEN 'Tarjeta de Débito'
+        WHEN card_type = 'credito' THEN 'Tarjeta de Crédito'
+        ELSE null
+    END AS type
+  FROM
+    clicksuscribe.openpay_click
+  WHERE
+      cart_id LIKE '%${order}%'
+  `)
+    .then(result => result.data[0])
+);
+
 module.exports = orders;

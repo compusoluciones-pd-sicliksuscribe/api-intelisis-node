@@ -17,7 +17,7 @@ const getBaseMail = (mailContent, template) => {
 };
 emailTypes.NotificationErrorInsertOrder = (body, template) => {
   const emailBody = Object.assign({}, body);
-  emailBody.address = ['clicksuscribe@compusoluciones.com'];
+  emailBody.address = ['mhernandez@compusoluciones.com'];
   emailBody.subject = 'API Intelisis - Error al facturar';
   emailBody.title = '<br>Fallo al intentar realizar el registro de la factura en Intelisis';
   emailBody.message = `

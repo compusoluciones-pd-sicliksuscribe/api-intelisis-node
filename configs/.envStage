@@ -1,14 +1,18 @@
 ENVIRONMENT=staging
 
 DB_HOST=db-sicliksuscribe-staging.crwhfvngz1ns.us-east-1.rds.amazonaws.com
-DB_USER=root
-DB_PASSWORD=fernandoMAX_1994
+DB_USER=jvaltierra
+DB_PASSWORD=joelCLICK_2022
 DB_NAME=clicksuscribe
 DB_DATE_STRINGS=date
 DB_DEBUG=false
 DB_SHOW_QUERIES=false
 DB_CONNECTION_LIMIT=15
 
+ROUTE_PROJECTS=governance/projects
+ROUTE_PROJECTS_BY_RFC=governance/projects/by/rfc
+ROUTE_BILLING_VENTA=governance/billing/insert
+INTELIS_HOST=http://localhost:9012/
 
 API_ERP=https://ws.compusoluciones.com/clicksuscribePruebas/
 BCC_MAIL_LIST= josedera@compusoluciones.com; 

@@ -9,6 +9,10 @@ DB_DEBUG=false
 DB_SHOW_QUERIES=false
 DB_CONNECTION_LIMIT=15
 
+ROUTE_PROJECTS=projects
+ROUTE_PROJECTS_BY_RFC=projects/by/rfc
+ROUTE_BILLING_VENTA=billing/insert
+INTELIS_HOST=https://hv5h195n38.execute-api.us-east-1.amazonaws.com/prod/governance/
 
 API_ERP=https://ws.compusoluciones.com/clicksuscribe/
 BCC_MAIL_LIST= clicksuscribe@compusoluciones.com; kelizald@compusoluciones.com

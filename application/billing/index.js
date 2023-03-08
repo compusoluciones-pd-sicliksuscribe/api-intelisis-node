@@ -10,5 +10,5 @@ module.exports = {
   billMsOrders,
   billAWSOrders,
   billAzurePlanOrders,
-  billMsNCEOrders
+  billMsNCEOrders,
 };
