@@ -71,7 +71,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     Moneda: order.MonedaPago === 'Pesos' ? 'Pesos' : 'Dolares',
     TipoCambio: order.MonedaPago === 'Pesos' ? 1 : order.TipoCambio,
     Cliente: order.Cliente,
-    FormaEnvio: 'No Requiere Envio',
+    FormaEnvio: 'Marketplace',
     Condicion: order.IdFormaPago === 2 ? payments.CREDIT : payments.CASH,
     FormaPagoTipo: order.IdFormaPago === 2 ? payments.CREDIT : await paymentMethod(order.IdFormaPago, order.IdPedido),
     Proyecto: project,

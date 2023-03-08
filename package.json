@@ -11,7 +11,7 @@
   "author": "CompuSoluciones",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.2.5",
+    "axios": "^0.21.4",
     "bluebird": "^3.4.7",
     "body-parser": "^1.13.3",
     "cron": "^1.1.0",
