@@ -13,7 +13,7 @@ const paymentMethod = async (paymentType, order) => {
   switch (paymentType) {
     case 1:
       const cardType = await ordersData.getPaymentMethod(order);
-      method = cardType.type !== null ? cardType.type : payments.CREDIT_CARD;
+      method = cardType ? cardType.type : payments.CREDIT_CARD;
       break;
     case 3:
       method = payments.PAYPAL;
