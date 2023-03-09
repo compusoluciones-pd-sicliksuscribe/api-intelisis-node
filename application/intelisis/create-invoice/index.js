@@ -77,7 +77,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     Proyecto: project,
     Concepto: 'MarketPlace',
     UEN: order.UEN,
-    Agente: order.Agente,
+    Agente: order.Agente ? order.Agente : 'SINAGENTE',
     EnviarA: 1,
     AgenteServicio: 'SINAGENTE',
     ZonaImpuesto: 'Nacional',

@@ -3,7 +3,8 @@ const emailer = require('./config/emailer');
 const template = require('./templates/default');
 const emailService = {};
 
-emailService.sendNotificationErrorInsertOrder = body => {
+emailService.sendNotificationErrorInsertOrder = (body, message) => {
+  body.message = message;
   const email = emailFactory.buildEmail(body, 'NotificationErrorInsertOrder', template);
   emailer.send(email);
 };

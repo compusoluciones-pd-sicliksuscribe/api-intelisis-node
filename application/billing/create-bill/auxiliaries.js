@@ -40,7 +40,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
           if (invoiceStatus.content.success.success === 1) {
             return updateOrder(invoiceStatus.content.success.data.id, order.IdPedido);
           }
-          return sendNotificationErrorInsertOrder(order);
+          return sendNotificationErrorInsertOrder(order, invoiceStatus.content.success.message);
         });
 
   auxiliaries.billOrders = ({ data }) =>

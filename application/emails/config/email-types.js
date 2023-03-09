@@ -23,6 +23,7 @@ emailTypes.NotificationErrorInsertOrder = (body, template) => {
   emailBody.message = `
     <br><br>Error al facturar pedido<br>
     <br> IdPedido: ${body.IdPedido}
+    <br> Error: ${body.message}
   `;
   return getBaseMail(emailBody, template);
 };
