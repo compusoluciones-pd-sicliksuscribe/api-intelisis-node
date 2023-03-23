@@ -442,7 +442,7 @@ WHERE
         AND Distribuidor.IdERP IS NOT NULL
         AND P.PedidoImportado IS NULL
         AND P.Facturado = 1
-        AND UsuarioFinal.NombreEmpresa IS NOT NULL
+        AND UsuarioFinal.NombreEmpresa IS NOT NULl
         AND F.UEN IS NOT NULL
         AND P.MonedaPago IS NOT NULL
         AND P.TipoCambio IS NOT NULL
@@ -450,8 +450,8 @@ WHERE
         AND IdFormaPago = 2
         AND Pro.IdTipoProducto != 3
         AND P.FechaFin IS NOT NULL
-        AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaInicio, '%m')
-        AND DATE_FORMAT(NOW(), '%m') != DATE_FORMAT(P.FechaFin, '%m')
+        AND DATE_FORMAT(NOW(), '%m %Y') != DATE_FORMAT(P.FechaInicio, '%m %Y')
+        AND DATE_FORMAT(NOW(), '%06 %m %Y') < DATE_FORMAT(P.FechaFin, '%d %m %Y')
         AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6, 1, IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'), 1, 0 )) = 1
         AND FAM.MesFactura IS NULL;
         `).then(res => res.data);
