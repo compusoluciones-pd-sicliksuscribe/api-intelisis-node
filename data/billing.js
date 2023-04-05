@@ -442,7 +442,7 @@ WHERE
         AND Distribuidor.IdERP IS NOT NULL
         AND P.PedidoImportado IS NULL
         AND P.Facturado = 1
-        AND UsuarioFinal.NombreEmpresa IS NOT NULl
+        AND UsuarioFinal.NombreEmpresa IS NOT NULL
         AND F.UEN IS NOT NULL
         AND P.MonedaPago IS NOT NULL
         AND P.TipoCambio IS NOT NULL
