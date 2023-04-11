@@ -451,7 +451,7 @@ WHERE
         AND Pro.IdTipoProducto != 3
         AND P.FechaFin IS NOT NULL
         AND DATE_FORMAT(NOW(), '%m %Y') != DATE_FORMAT(P.FechaInicio, '%m %Y')
-        AND DATE_FORMAT(NOW(), '%06 %m %Y') < DATE_FORMAT(P.FechaFin, '%d %m %Y')
+        AND DATE_FORMAT(NOW(), '%06 %m %Y') != DATE_FORMAT(P.FechaFin, '%d %m %Y')
         AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6, 1, IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'), 1, 0 )) = 1
         AND FAM.MesFactura IS NULL;
         `).then(res => res.data);
