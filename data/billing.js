@@ -36,7 +36,8 @@ AND ((P.IdFabricante = 2 AND contrato.FechaFin IS NOT NULL)
 AND P.IdEsquemaRenovacion != 8
 AND P.IdPedidoPadre IS NULL
 AND ((P.IdFormaPago = 2 AND P.IdFabricante = 1 AND PD.ResultadoFabricante7 != 'RENEWAL')
-   OR (P.IdFormaPago = 2 AND P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2)	
+   OR (P.IdFormaPago = 2 AND P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2)
+   OR (P.IdFormaPago = 2 AND P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 9)
    OR (P.IdFabricante != 1 AND (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 != 'RENEWAL'))
    OR (P.IdFormaPago in (1,3,4,5) AND ((P.IdFabricante = 1 AND (PD.ResultadoFabricante7 IS NULL OR PD.ResultadoFabricante7 in ('CREATEORDER','ADDSEAT','COTERM','RENEWAL')))
    OR P.IdFabricante != 1)))
