@@ -83,7 +83,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     ZonaImpuesto: 'Nacional',
     Causa: 'Adquisición de mercancias - G01',
     Observaciones: order.Observaciones,
-    Comentarios: order.EsquemaRenovacion !== '' ? order.EsquemaRenovacion : order.Estado,
+    Comentarios: order.IdFabricante === 2 ? order.Estado : order.EsquemaRenovacion,
     ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto}/${order.DominioMicrosoftUF}` : order.Proyecto,
     VentaD: ventaDetails,
   };
