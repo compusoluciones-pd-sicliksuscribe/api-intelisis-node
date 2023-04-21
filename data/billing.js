@@ -9,7 +9,7 @@ SELECT DISTINCT
 P.IdPedido, P.IdPrimerPedido, Distribuidor.IdERP AS Cliente, IFNULL(Distribuidor.Credito, 0) Credito,
 UsuarioFinal.NombreEmpresa AS Proyecto, P.IdFabricante, UsuarioFinal.RFC, UsuarioFinal.DominioMicrosoftUF,
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, fn_CalcularTotalPedido(P.IdPedido) AS Total, 
-fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA,
+fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA, UsuarioFinal.Estado,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
 (CASE
   WHEN (P.IdFabricante = 2) THEN IF(P.IdAccionAutodesk > 3, Distribuidor.AgenteAutodeskRenovacion, Distribuidor.AgenteAutodesk)
