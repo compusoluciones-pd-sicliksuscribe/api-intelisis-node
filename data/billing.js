@@ -35,6 +35,7 @@ AND ((P.IdFabricante = 2 AND contrato.FechaFin IS NOT NULL)
 	OR (P.FechaFin IS NOT NULL))
 AND P.IdEsquemaRenovacion != 8
 AND P.IdPedidoPadre IS NULL
+AND PD.PrecioUnitario > 0
 AND ((P.IdFormaPago = 2 AND P.IdFabricante = 1 AND PD.ResultadoFabricante7 != 'RENEWAL')
    OR (P.IdFormaPago = 2 AND P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2)
    OR (P.IdFormaPago = 2 AND P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 9)
@@ -221,7 +222,7 @@ WHERE
         AND P.IdEsquemaRenovacion IN (?)
         AND P.FechaFin = Date_format(now(),'%Y-%m-06')
         AND PD.PrecioUnitario > 0.1
-        LIMIT 20;`, [AZURE_PLAN]);
+        LIMIT 100;`, [AZURE_PLAN]);
 
 billing.selectPendingOrderDetail = IdPedido => help.d$().query(`
 SELECT 
@@ -255,7 +256,7 @@ INNER JOIN traPedidos Ped ON Ped.IdPedido = PD.IdPedido
 LEFT JOIN traPedidosProrrateados PP ON PP.IdPedido = PD.IdPedido
 LEFT JOIN traSPAutodesk SP ON SP.IdPedido = PD.IdPedido
 WHERE PD.IdPedido = ?
-AND PD.Activo = 1
+AND IF(PD.Activo = 0 && PD.IdProducto = 8777, 1, IF(PD.Activo = 1, 1, 0)) = 1
 AND CASE
 WHEN Ped.IdFabricante = 10 THEN PD.PrecioUnitario >= 0.05
 ELSE PD.PrecioUnitario
