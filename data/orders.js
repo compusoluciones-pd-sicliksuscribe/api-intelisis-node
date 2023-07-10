@@ -43,4 +43,49 @@ orders.getPaymentMethod = order => (
     .then(result => result.data[0])
 );
 
+
+orders.getOpenpayCCInfo = order => (
+  help.d$().query(`
+  SELECT 
+    op.name,
+    op.cart_id,
+    op.amount,
+      op.register_date,
+      CASE
+          WHEN op.openpay_status = 'completed' THEN 'Pago completado'
+          WHEN op.openpay_status = 'charge_pending' THEN 'Pago pendiente'
+          ELSE NULL
+      END AS estatus
+  FROM
+      clicksuscribe.openpay_click op
+          INNER JOIN
+      traPedidos P ON P.TarjetaResultIndicator = op.openpay_payment_id
+          INNER JOIN
+      traUsuariosXEmpresas usu ON usu.IdUsuario = op.user_id
+  WHERE
+    P.IdPedido IN (${order});
+  `)
+    .then(result => result.data[0])
+);
+
+orders.getOpenpaySpeiInfo = order => (
+  help.d$().query(`
+    SELECT 
+      usu.NombreEmpresa,
+      op.descripcion,
+    op.monto,
+      op.moneda,
+      op.fechaCreacion
+  FROM
+      clicksuscribe.traSpeiTransaccion op
+          INNER JOIN
+      traPedidos P ON P.IdPedido = op.idPedido
+          INNER JOIN
+      traEmpresas usu ON usu.IdEmpresa = op.idEmpresa
+  WHERE
+      P.IdPedido IN (${order});
+    `)
+    .then(result => result.data[0])
+);
+
 module.exports = orders;

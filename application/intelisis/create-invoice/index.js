@@ -1,5 +1,6 @@
 /* eslint-disable no-case-declarations */
 const axios = require('axios');
+const moment = require('moment');
 const URL = `${process.env.INTELIS_HOST}${process.env.ROUTE_BILLING_VENTA}`;
 const projectByRFC = require('../get-project-by-rfc');
 const payments = require('../../../helpers/enums/payment-types');
@@ -21,9 +22,24 @@ const paymentMethod = async (paymentType, order) => {
     case 4:
       method = payments.TRANSFER;
       break;
+    case 5:
+      method = payments.SPEI;
+      break;
     default: method = payments.TRANSFER;
   }
   return method;
+};
+
+const openpayInfo = async (IdFormaPago, IdPedido) => {
+  let Observaciones = '';
+  if (IdFormaPago == 1) {
+    const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(IdPedido);
+    Observaciones = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (Tarjeta), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
+  } else {
+    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(IdPedido)
+    Observaciones = `${openpayPaymentInfoSPEI.NombreEmpresa}, ${openpayPaymentInfoSPEI.descripcion} (SPEI), ${openpayPaymentInfoSPEI.monto} MXN, ${moment(openpayPaymentInfoSPEI.fechaCreacion).format('DD/MM/YYYY')}`;
+  }
+  return Observaciones;
 };
 
 const formatDetails = async (orderDetails, fabricante) => {
@@ -82,7 +98,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     AgenteServicio: 'SINAGENTE',
     ZonaImpuesto: 'Nacional',
     Causa: 'Adquisición de mercancias - G01',
-    Observaciones: order.Observaciones,
+    Observaciones: order.IdFormaPago === 1 || order.IdFormaPago === 5 ? await openpayInfo(order.IdFormaPago, order.IdPedido) : order.Observaciones,
     Comentarios: order.IdFabricante === 2 ? order.Estado : order.EsquemaRenovacion,
     ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto}/${order.DominioMicrosoftUF}` : order.Proyecto,
     VentaD: ventaDetails,
