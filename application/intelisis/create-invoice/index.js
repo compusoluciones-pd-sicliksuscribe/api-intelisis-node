@@ -4,6 +4,7 @@ const moment = require('moment');
 const URL = `${process.env.INTELIS_HOST}${process.env.ROUTE_BILLING_VENTA}`;
 const projectByRFC = require('../get-project-by-rfc');
 const payments = require('../../../helpers/enums/payment-types');
+const paymentTypes = require('../../../helpers/enums/auxiliariesOpenpay');
 const ordersData = require('../../../data/orders');
 const GENERIC_PROJECT_CLICK = 'SICLIKSUSCRIBE';
 const GENERIC_RFC_NATIONAL = 'XAXX010101000';
@@ -12,17 +13,17 @@ const GENERIC_RFC_FOREIGN = 'XEXX010101000';
 const paymentMethod = async (paymentType, order) => {
   let method = '';
   switch (paymentType) {
-    case 1:
+    case paymentTypes.CARD_PAYMENT_ID:
       const cardType = await ordersData.getPaymentMethod(order);
       method = cardType ? cardType.type : payments.CREDIT_CARD;
       break;
-    case 3:
+    case paymentTypes.PAYPAL_ID:
       method = payments.PAYPAL;
       break;
-    case 4:
+    case paymentTypes.TRANSFER_ID:
       method = payments.TRANSFER;
       break;
-    case 5:
+    case paymentTypes.SPEI_ID:
       method = payments.SPEI;
       break;
     default: method = payments.TRANSFER;
@@ -30,16 +31,16 @@ const paymentMethod = async (paymentType, order) => {
   return method;
 };
 
-const openpayInfo = async (IdFormaPago, IdPedido) => {
-  let Observaciones = '';
-  if (IdFormaPago == 1) {
-    const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(IdPedido);
-    Observaciones = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (Tarjeta), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
+const openpayInfo = async (paymentFormat, order) => {
+  let opPurchaseInfo = '';
+  if (paymentFormat == payments.CARD_PAYMENT_ID) {
+    const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(order);
+    opPurchaseInfo = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (${paymentTypes.CARD_METHOD}), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
   } else {
-    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(IdPedido)
-    Observaciones = `${openpayPaymentInfoSPEI.NombreEmpresa}, ${openpayPaymentInfoSPEI.descripcion} (SPEI), ${openpayPaymentInfoSPEI.monto} MXN, ${moment(openpayPaymentInfoSPEI.fechaCreacion).format('DD/MM/YYYY')}`;
+    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(order)
+    opPurchaseInfo = `${openpayPaymentInfoSPEI.NombreEmpresa}, ${openpayPaymentInfoSPEI.descripcion} (${paymentTypes.SPEI_METHOD}), ${openpayPaymentInfoSPEI.monto} ${openpayPaymentInfoSPEI.OPENPAY_PESOS_CURRENCY}, ${moment(openpayPaymentInfoSPEI.fechaCreacion).format('DD/MM/YYYY')}`;
   }
-  return Observaciones;
+  return opPurchaseInfo;
 };
 
 const formatDetails = async (orderDetails, fabricante) => {
@@ -98,7 +99,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     AgenteServicio: 'SINAGENTE',
     ZonaImpuesto: 'Nacional',
     Causa: 'Adquisición de mercancias - G01',
-    Observaciones: order.IdFormaPago === 1 || order.IdFormaPago === 5 ? await openpayInfo(order.IdFormaPago, order.IdPedido) : order.Observaciones,
+    Observaciones: order.IdFormaPago === paymentTypes.CARD_PAYMENT_ID || order.IdFormaPago === paymentTypes.SPEI_ID ? await openpayInfo(order.IdFormaPago, order.IdPedido) : order.Observaciones,
     Comentarios: order.IdFabricante === 2 ? order.Estado : order.EsquemaRenovacion,
     ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto}/${order.DominioMicrosoftUF}` : order.Proyecto,
     VentaD: ventaDetails,

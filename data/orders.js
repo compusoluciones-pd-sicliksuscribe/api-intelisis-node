@@ -50,12 +50,7 @@ orders.getOpenpayCCInfo = order => (
     op.name,
     op.cart_id,
     op.amount,
-      op.register_date,
-      CASE
-          WHEN op.openpay_status = 'completed' THEN 'Pago completado'
-          WHEN op.openpay_status = 'charge_pending' THEN 'Pago pendiente'
-          ELSE NULL
-      END AS estatus
+    op.register_date
   FROM
       clicksuscribe.openpay_click op
           INNER JOIN
@@ -73,7 +68,7 @@ orders.getOpenpaySpeiInfo = order => (
     SELECT 
       usu.NombreEmpresa,
       op.descripcion,
-    op.monto,
+      op.monto,
       op.moneda,
       op.fechaCreacion
   FROM
