@@ -33,7 +33,7 @@ const paymentMethod = async (paymentType, order) => {
 
 const openpayInfo = async (paymentFormat, order) => {
   let opPurchaseInfo = '';
-  if (paymentFormat == payments.CARD_PAYMENT_ID) {
+  if (paymentFormat == paymentTypes.CARD_PAYMENT_ID) {
     const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(order);
     opPurchaseInfo = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (${paymentTypes.CARD_METHOD}), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
   } else {
