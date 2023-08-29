@@ -2,8 +2,7 @@ const auxiliariesFactory = require('./auxiliaries');
 const validation = require('../create-bill/validation');
 
 const {
-  billOrders, selectPendingMsOrders, groupOrdersToBill, completeBillData, insertOrdersToBill,
-  insertBillDetails, updateOrders,
+  selectPendingMsOrders, groupOrdersToBill, completeBillData, billOrders, insertOrdersToBill,
 } = auxiliariesFactory();
 
 const billAllOrders = ({ limit }) =>
@@ -13,8 +12,6 @@ const billAllOrders = ({ limit }) =>
       .then(completeBillData)
       .then(insertOrdersToBill)
       .then(billOrders)
-      .then(insertBillDetails)
-      .then(updateOrders)
       .catch(err => err);
 
 module.exports = billAllOrders;

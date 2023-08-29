@@ -2,11 +2,12 @@ const { groupBy } = require('ramda');
 const moment = require('moment');
 const throwCustomError = require('../../../helpers/factories/errorFactory');
 const billingData = require('../../../data/billing');
-const intelisis = require('../../intelisis');
 const ordersData = require('../../../data/orders');
 const { ON_DEMAND } = require('../../../helpers/enums/product-types');
 const { MICROSOFT } = require('../../../helpers/enums/makers');
-const { sendNotificationErrorInsertOrder, sendNotificationErrorInsertOrderDetails } = require('../../emails/');
+const { sendNotificationErrorInsertOrder } = require('../../emails/');
+const createInvoice = require('../../intelisis/create-invoice');
+
 const defaults = {
   billing: billingData,
   orders: ordersData,
@@ -28,31 +29,17 @@ const auxiliariesFactory = (dependencies = defaults) => {
   auxiliaries.selectPendingMsOrders = () => selectPendingMsOrdersToBill()
     .then(res => (res.length ? res : throwCustomError('Sin ordenes por facturar')));
 
-  const verifyIfBillExist = order => intelisis.getSale(order.IdPedido);
-
-  const verifyResponse = (res, { IdPedido }) => {
-    const response = JSON.parse(res);
-    return response.length > 0 ? response : sendNotificationErrorInsertOrderDetails({ IdPedido });
-  };
-
-  const updateOrder = async (ID, details) => Promise.all(details.map(detail => patch({ Facturado: 1, IdFactura: ID }, detail.IdPedido)));
-
-  const billOrder = async order => {
-    const bill = await intelisis.createSale(order);
-    const parsedBill = JSON.parse(bill);
-    if (parsedBill.length > 0) {
-      order.ID = parsedBill[0].ID;
-      return order.ID ? order : throwCustomError('error');
-    }
-    return sendNotificationErrorInsertOrder(order);
-  };
+  const updateOrder = async (ID, order) => await patch({ Facturado: 1, IdFactura: ID }, order);
 
   const buildBillHeader = (billData, tipoCambio, expiration, total) =>
   ({
     IdPedido: billData.IdPedido || 1,
+    IdFabricante: billData.IdFabricante,
     Cliente: billData.Cliente,
     Credito: billData.Credito,
     Proyecto: billData.Proyecto,
+    DominioMicrosoftUF: billData.DominioMicrosoftUF,
+    RFC: billData.RFC,
     UEN: billData.UEN,
     MonedaPago: billData.MonedaPago,
     TipoCambio: tipoCambio,
@@ -77,33 +64,18 @@ const auxiliariesFactory = (dependencies = defaults) => {
 
   auxiliaries.updateOrders = async ordersToUpdate => Promise.all(ordersToUpdate.map(order => updateOrder(order.ID, order.details)));
 
-  auxiliaries.insertBillDetails = ordersToBill =>
-  Promise.all(ordersToBill.map(async order => {
-    if (!order.exist) {
-      await Promise.all(order.details.map(async (detail, index) => {
-        detail.ID = order.ID;
-        detail.RenglonID = index + 1;
-        detail.Renglon = (index + 1) * 2048;
-        return intelisis.insertOrderDetail(detail)
-        .then(res => verifyResponse(res, detail));
-      }));
-    }
-    return order;
-  }));
+  const billOrder = async order =>
+  createInvoice(order, order.details)
+   .then(invoiceStatus => {
+     if (invoiceStatus.content.success.success === 1) {
+       console.log(invoiceStatus.content.success.data.id, order.idOrdersToBill, 'resultado');
+       return order.idOrdersToBill.map(async pedido => await updateOrder(invoiceStatus.content.success.data.id, pedido));
+     }
+     return sendNotificationErrorInsertOrder({ IdPedido: JSON.stringify(order.idOrdersToBill) }, invoiceStatus.content.success.message);
+   });
 
   auxiliaries.billOrders = ordersToBill =>
-    Promise.all(ordersToBill.map(async order => {
-      const billExist = await verifyIfBillExist(order);
-      const response = JSON.parse(billExist);
-      if (response.length > 0 && response[0].Proyecto === order.Proyecto) {
-        order.exist = response.length > 0 ? 1 : 0;
-        order.ID = response[0].ID;
-        await updateOrder(response[0].ID, order.details);
-        return order;
-      }
-      return billOrder(order)
-        .catch(err => err);
-    }));
+    Promise.all(ordersToBill.map(async order => billOrder(order)));
 
   auxiliaries.insertOrdersToBill = async ordersToInsert => Promise.all(ordersToInsert.map(order => {
     order.idOrdersToBill.map(async item => {

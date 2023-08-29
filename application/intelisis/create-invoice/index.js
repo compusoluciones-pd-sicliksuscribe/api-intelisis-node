@@ -37,7 +37,7 @@ const openpayInfo = async (paymentFormat, order) => {
     const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(order);
     opPurchaseInfo = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (${paymentTypes.CARD_METHOD}), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
   } else {
-    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(order)
+    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(order);
     opPurchaseInfo = `${openpayPaymentInfoSPEI.NombreEmpresa}, ${openpayPaymentInfoSPEI.descripcion} (${paymentTypes.SPEI_METHOD}), ${openpayPaymentInfoSPEI.monto} ${openpayPaymentInfoSPEI.OPENPAY_PESOS_CURRENCY}, ${moment(openpayPaymentInfoSPEI.fechaCreacion).format('DD/MM/YYYY')}`;
   }
   return opPurchaseInfo;
