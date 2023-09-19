@@ -4,8 +4,8 @@ const paymentTypes = {
   CARD_PAYMENT_ID: 1,
   PAYPAL_ID: 3,
   SPEI_ID: 5,
-  CARD_METHOD: 'Tarjeta',
-  SPEI_METHOD: 'SPEI',
+  CARD: 'Tarjeta',
+  SPEI: 'SPEI',
   OPENPAY_PESOS_CURRENCY: 'mxn',
 };
 
