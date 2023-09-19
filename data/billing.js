@@ -374,7 +374,10 @@ SELECT DISTINCT
     Distribuidor.AgenteMicrosoft AS Agente,
     'Mensual' AS EsquemaRenovacion,
     P.IdEmpresaDistribuidor,
-    P.IdEmpresaUsuarioFinal
+    P.IdEmpresaUsuarioFinal,
+    UsuarioFinal.DominioMicrosoftUF,
+    UsuarioFinal.RFC,
+    P.IdFabricante
 FROM
     traPedidos P
         INNER JOIN
@@ -426,7 +429,10 @@ SELECT DISTINCT
     Distribuidor.AgenteMicrosoft AS Agente,
     'Anual con facturación mensual' AS EsquemaRenovacion,
     P.IdEmpresaDistribuidor,
-    P.IdEmpresaUsuarioFinal
+    P.IdEmpresaUsuarioFinal,
+    UsuarioFinal.DominioMicrosoftUF,
+    UsuarioFinal.RFC,
+    P.IdFabricante
 FROM
     traPedidos P
         INNER JOIN
