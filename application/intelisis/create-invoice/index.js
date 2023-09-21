@@ -37,7 +37,7 @@ const openpayInfo = async (paymentFormat, order) => {
     const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(order);
     opPurchaseInfo = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (${paymentTypes.CARD_METHOD}), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
   } else {
-    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(order)
+    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(order);
     opPurchaseInfo = `${openpayPaymentInfoSPEI.NombreEmpresa}, ${openpayPaymentInfoSPEI.descripcion} (${paymentTypes.SPEI_METHOD}), ${openpayPaymentInfoSPEI.monto} ${openpayPaymentInfoSPEI.OPENPAY_PESOS_CURRENCY}, ${moment(openpayPaymentInfoSPEI.fechaCreacion).format('DD/MM/YYYY')}`;
   }
   return opPurchaseInfo;
@@ -101,7 +101,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     Causa: 'Adquisición de mercancias - G01',
     Observaciones: order.IdFormaPago === paymentTypes.CARD_PAYMENT_ID || order.IdFormaPago === paymentTypes.SPEI_ID ? await openpayInfo(order.IdFormaPago, order.IdPedido) : order.Observaciones,
     Comentarios: order.IdFabricante === 2 ? order.Estado : order.EsquemaRenovacion,
-    ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto}/${order.DominioMicrosoftUF}` : order.Proyecto,
+    ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto.slice(0, 79)}/${order.DominioMicrosoftUF.slice(0, 20)}` : order.Proyecto,
     VentaD: ventaDetails,
   };
   return axios.post(URL, body).then(response => response.data);

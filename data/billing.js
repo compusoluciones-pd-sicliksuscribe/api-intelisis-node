@@ -49,10 +49,12 @@ GROUP BY PD.IdPedido;
 
 billing.selectPendingMsOrdersToBill = () => help.d$().query(`SELECT DISTINCT
 P.IdPedido,
+P.IdFabricante,
 P.IdPrimerPedido,
 Distribuidor.IdERP AS Cliente,
 IFNULL(Distribuidor.Credito, 0) Credito,
 UsuarioFinal.NombreEmpresa AS Proyecto,
+UsuarioFinal.RFC,
 F.UEN,
 P.MonedaPago,
 P.TipoCambio,
@@ -64,7 +66,8 @@ P.FechaFin AS Vencimiento,
 Distribuidor.AgenteMicrosoft AS Agente,
 P.IdEsquemaRenovacion AS EsquemaRenovacion,
 P.IdEmpresaDistribuidor,
-P.IdEmpresaUsuarioFinal
+P.IdEmpresaUsuarioFinal,
+UsuarioFinal.DominioMicrosoftUF
 FROM
 traPedidos P
     INNER JOIN
@@ -97,7 +100,7 @@ P.Facturado = 0
     AND IdFormaPago = 2
     AND Pro.IdTipoProducto != 3
     AND P.FechaInicio <= Date_format(now(),'%Y-%m-22')
-  AND P.FechaFin IS NOT NULL;`).then(res => res.data);
+  AND P.FechaFin IS NOT NULL`).then(res => res.data);
 
 billing.selectPendingAWSOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
@@ -371,7 +374,10 @@ SELECT DISTINCT
     Distribuidor.AgenteMicrosoft AS Agente,
     'Mensual' AS EsquemaRenovacion,
     P.IdEmpresaDistribuidor,
-    P.IdEmpresaUsuarioFinal
+    P.IdEmpresaUsuarioFinal,
+    UsuarioFinal.DominioMicrosoftUF,
+    UsuarioFinal.RFC,
+    P.IdFabricante
 FROM
     traPedidos P
         INNER JOIN
@@ -423,7 +429,10 @@ SELECT DISTINCT
     Distribuidor.AgenteMicrosoft AS Agente,
     'Anual con facturación mensual' AS EsquemaRenovacion,
     P.IdEmpresaDistribuidor,
-    P.IdEmpresaUsuarioFinal
+    P.IdEmpresaUsuarioFinal,
+    UsuarioFinal.DominioMicrosoftUF,
+    UsuarioFinal.RFC,
+    P.IdFabricante
 FROM
     traPedidos P
         INNER JOIN
