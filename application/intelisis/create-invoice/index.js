@@ -100,7 +100,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     ZonaImpuesto: 'Nacional',
     Causa: 'Adquisición de mercancias - G01',
     Observaciones: order.IdFormaPago === paymentTypes.CARD_PAYMENT_ID || order.IdFormaPago === paymentTypes.SPEI_ID ? await openpayInfo(order.IdFormaPago, order.IdPedido) : order.Observaciones,
-    Comentarios: order.IdFabricante === 2 ? order.Estado : order.EsquemaRenovacion,
+    Comentarios: order.IdFabricante === 2 ? order.Estado : `${order.EsquemaRenovacion} ${order.FechaInicio} - ${order.FechaFin}`,
     ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto.slice(0, 79)}/${order.DominioMicrosoftUF.slice(0, 20)}` : order.Proyecto,
     VentaD: ventaDetails,
   };

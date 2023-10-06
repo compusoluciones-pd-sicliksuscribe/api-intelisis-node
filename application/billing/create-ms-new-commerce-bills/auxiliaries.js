@@ -52,6 +52,8 @@ const auxiliariesFactory = (dependencies = defaults) => {
     Total: total,
     IVA: total * 0.16,
     Vencimiento: expiration,
+    FechaInicio: billData.FechaInicio,
+    FechaFin: billData.FechaFin,
     Agente: billData.Agente,
     EsquemaRenovacion: billData.EsquemaRenovacion,
     IdEmpresaDistribuidor: billData.IdEmpresaDistribuidor,
@@ -74,7 +76,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
    .then(invoiceStatus => {
      if (invoiceStatus.content.success.success === 1) {
        return order.idOrdersToBill.map(async pedido => {
-         insertActualBill(pedido, order.IdPedido);
+         insertActualBill(pedido, order.IdPedido, order.EsquemaRenovacion, order.FechaInicio, order.FechaFin);
          return await updateOrder(invoiceStatus.content.success.data.id, pedido);
        });
      }
