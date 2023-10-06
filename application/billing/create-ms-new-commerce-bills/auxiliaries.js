@@ -5,7 +5,7 @@ const billingData = require('../../../data/billing');
 const ordersData = require('../../../data/orders');
 const { ON_DEMAND } = require('../../../helpers/enums/product-types');
 const { MICROSOFT } = require('../../../helpers/enums/makers');
-const { MONTHLY } = require('../../../helpers/enums/renewal-schema-types');
+const { MONTHLY, ANNUAL_MONTHLY } = require('../../../helpers/enums/renewal-schema-types');
 const createInvoice = require('../../intelisis/create-invoice');
 
 const { sendNotificationErrorInsertOrder } = require('../../emails/');
@@ -56,6 +56,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
     FechaFin: billData.FechaFin,
     Agente: billData.Agente,
     EsquemaRenovacion: billData.EsquemaRenovacion,
+    IdEsquemaRenovacion: billData.IdEsquemaRenovacion,
     IdEmpresaDistribuidor: billData.IdEmpresaDistribuidor,
     IdEmpresaUsuarioFinal: billData.IdEmpresaUsuarioFinal,
   });
@@ -76,7 +77,9 @@ const auxiliariesFactory = (dependencies = defaults) => {
    .then(invoiceStatus => {
      if (invoiceStatus.content.success.success === 1) {
        return order.idOrdersToBill.map(async pedido => {
-         insertActualBill(pedido, order.IdPedido, order.EsquemaRenovacion, order.FechaInicio, order.FechaFin);
+         if (order.IdEsquemaRenovacion === ANNUAL_MONTHLY) {
+           insertActualBill(pedido, order.IdPedido, order.EsquemaRenovacion, order.FechaInicio, order.FechaFin);
+         }
          return await updateOrder(invoiceStatus.content.success.data.id, pedido);
        });
      }
