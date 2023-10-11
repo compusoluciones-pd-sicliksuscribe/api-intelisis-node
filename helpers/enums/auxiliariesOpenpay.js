@@ -6,7 +6,6 @@ const paymentTypes = {
   SPEI_ID: 5,
   CARD: 'Tarjeta',
   SPEI: 'SPEI',
-  OPENPAY_PESOS_CURRENCY: 'mxn',
 };
 
 module.exports = Object.freeze(paymentTypes);
