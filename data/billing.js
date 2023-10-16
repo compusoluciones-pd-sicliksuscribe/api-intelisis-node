@@ -470,7 +470,7 @@ SELECT DISTINCT
     ),
     '%Y-%m-%d'
   )
-    END AS InicioPeriodo,
+    END AS FechaInicio,
     CASE
         WHEN
             DAYOFMONTH(P.FechaFin) = 1
@@ -492,7 +492,7 @@ SELECT DISTINCT
                                 DAY(P.FechaFin))),
                 INTERVAL 1 DAY),
             INTERVAL 1 DAY)
-    END AS FinPeriodo,
+    END AS FechaFin,
     Distribuidor.AgenteMicrosoft AS Agente,
     'Anual con facturación mensual' AS EsquemaRenovacion,
     P.IdEsquemaRenovacion,
