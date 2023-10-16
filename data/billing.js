@@ -11,7 +11,7 @@ UsuarioFinal.NombreEmpresa AS Proyecto, P.IdFabricante, UsuarioFinal.RFC, Usuari
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA, UsuarioFinal.Estado,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
-P.FechaInicio AS FechaInicio,
+DATE_FORMAT(P.fechaInicio, '%Y-%m-%d') AS FechaInicio,
     CASE
         WHEN
             DAYOFMONTH(P.FechaFin) = 1
