@@ -11,34 +11,10 @@ UsuarioFinal.NombreEmpresa AS Proyecto, P.IdFabricante, UsuarioFinal.RFC, Usuari
 F.UEN, P.MonedaPago, P.TipoCambio, P.IdFormaPago, fn_CalcularTotalPedido(P.IdPedido) AS Total, 
 fn_CalcularIVA(fn_CalcularTotalPedido(P.IdPedido), Distribuidor.ZonaImpuesto) AS IVA, UsuarioFinal.Estado,
 IF (P.IdFabricante = 2, contrato.FechaFin, P.FechaFin) AS Vencimiento,
-DATE_FORMAT(P.fechaInicio, '%Y-%m-%d') AS FechaInicio,
-    CASE
-        WHEN
-            DAYOFMONTH(P.FechaFin) = 1
-        THEN
-            DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-01'),
-                INTERVAL 1 MONTH)
-        WHEN DAYOFMONTH(P.FechaFin) = DAY(LAST_DAY(P.FechaFin)) THEN LAST_DAY(now())
-        		WHEN DAY(P.FechaFin) <= 5 THEN  DATE_FORMAT(P.FechaFin,
-                        CONCAT(YEAR(NOW()),
-                                '-',
-                                MONTH(DATE_ADD(NOW(), INTERVAL 1 MONTH)),
-                                '-',
-                                LPAD(DAY(P.FechaFin),2,'0')))
-        ELSE DATE_SUB(DATE_ADD(DATE_FORMAT(P.FechaFin,
-                        CONCAT(YEAR(NOW()),
-                                '-',
-                                MONTH(NOW()),
-                                '-',
-                                DAY(P.FechaFin))),
-                INTERVAL 1 DAY),
-            INTERVAL 1 DAY)
-    END AS FechaFin,
 (CASE
   WHEN (P.IdFabricante = 2) THEN IF(P.IdAccionAutodesk > 3, Distribuidor.AgenteAutodeskRenovacion, Distribuidor.AgenteAutodesk)
   ELSE Distribuidor.AgenteMicrosoft
 END) AS Agente,
-P.IdEsquemaRenovacion,
 CASE WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 1) THEN 'Mensual'
   WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 2) THEN 'Anual'
   WHEN (P.IdFabricante = 1 AND P.IdEsquemaRenovacion = 9) THEN 'Anual con facturación mensual'
@@ -374,17 +350,15 @@ IdPedido)
 VALUES
 (? , ?);`, [lastBillId, order]);
 
-billing.insertActualBill = (order, lastBillId, esquemaRenovacion, FechaInicio, FechaFin) => help.d$().query(`
+billing.insertActualBill = (order, lastBillId) => help.d$().query(`
 INSERT INTO traFacturacionAnnualMensual
-(IdPedido, IdFactura, MesFactura, EsquemaRenovacion, FechaInicio, FechaFin) 
+(IdPedido, IdFactura, MesFactura) 
 VALUES 
-(? , ?, month(now()), ?, ?, ?);`, [order, lastBillId, esquemaRenovacion, FechaInicio, FechaFin]);
+(? , ?, month(now()));`, [order, lastBillId]);
 
 billing.selectPendingMsNCEMonthlyOrdersToBill = () => help.d$().query(`
 SELECT DISTINCT
     P.IdPedido,
-    P.FechaInicio,
-    P.FechaFin,
     P.IdPrimerPedido,
     Distribuidor.IdERP AS Cliente,
     IFNULL(Distribuidor.Credito, 0) Credito,
@@ -399,7 +373,6 @@ SELECT DISTINCT
     P.FechaFin AS Vencimiento,
     Distribuidor.AgenteMicrosoft AS Agente,
     'Mensual' AS EsquemaRenovacion,
-    P.IdEsquemaRenovacion,
     P.IdEmpresaDistribuidor,
     P.IdEmpresaUsuarioFinal,
     UsuarioFinal.DominioMicrosoftUF,
@@ -453,49 +426,8 @@ SELECT DISTINCT
     FN_CALCULARIVA(FN_CALCULARTOTALPEDIDO(P.IdPedido),
             Distribuidor.ZonaImpuesto) AS IVA,
     P.FechaFin AS Vencimiento,
-    CASE
-        WHEN DAY(P.FechaFin) = 1 THEN DATE_FORMAT(NOW(), '%Y-%m-02')
-        WHEN DAY(P.FechaFin) = DAY(LAST_DAY(P.FechaFin)) THEN DATE_FORMAT(NOW(), '%Y-%m-01')
-		WHEN DAY(P.FechaFin) <= 5 THEN  DATE_FORMAT(P.FechaFin,
-                        CONCAT(YEAR(NOW()),
-                                '-',
-                                MONTH(NOW()),
-                                '-',
-                                LPAD(DAY(DATE_ADD(P.FechaFin, INTERVAL 1 DAY)),2,'0')))
-       
-        ELSE   DATE_FORMAT(
-    DATE_ADD(
-      DATE_SUB(CONCAT(YEAR(NOW()), '-', MONTH(NOW()), '-', DAY(P.FechaFin)), INTERVAL 1 MONTH),
-      INTERVAL 1 DAY
-    ),
-    '%Y-%m-%d'
-  )
-    END AS FechaInicio,
-    CASE
-        WHEN
-            DAYOFMONTH(P.FechaFin) = 1
-        THEN
-            DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-01'),
-                INTERVAL 1 MONTH)
-        WHEN DAYOFMONTH(P.FechaFin) = DAY(LAST_DAY(P.FechaFin)) THEN LAST_DAY(now())
-        		WHEN DAY(P.FechaFin) <= 5 THEN  DATE_FORMAT(P.FechaFin,
-                        CONCAT(YEAR(NOW()),
-                                '-',
-                                MONTH(DATE_ADD(NOW(), INTERVAL 1 MONTH)),
-                                '-',
-                                LPAD(DAY(P.FechaFin),2,'0')))
-        ELSE DATE_SUB(DATE_ADD(DATE_FORMAT(P.FechaFin,
-                        CONCAT(YEAR(NOW()),
-                                '-',
-                                MONTH(NOW()),
-                                '-',
-                                DAY(P.FechaFin))),
-                INTERVAL 1 DAY),
-            INTERVAL 1 DAY)
-    END AS FechaFin,
     Distribuidor.AgenteMicrosoft AS Agente,
     'Anual con facturación mensual' AS EsquemaRenovacion,
-    P.IdEsquemaRenovacion,
     P.IdEmpresaDistribuidor,
     P.IdEmpresaUsuarioFinal,
     UsuarioFinal.DominioMicrosoftUF,
@@ -516,9 +448,9 @@ FROM
         AND PD.ResultadoFabricante1 IS NOT NULL
         INNER JOIN
     traProductos Pro ON Pro.IdProducto = PD.IdProducto
-        LEFT JOIN
-    traFacturacionAnnualMensual FAM ON FAM.IdPedido = P.IdPedido
-        AND FAM.MesFactura = MONTH(NOW())
+	    LEFT JOIN
+     traFacturacionAnnualMensual FAM ON FAM.IdPedido = P.IdPedido
+AND FAM.MesFactura = month(now())
 WHERE
     P.IdEstatusPedido IN (2 , 3)
         AND Distribuidor.IdERP IS NOT NULL
@@ -534,15 +466,8 @@ WHERE
         AND P.FechaFin IS NOT NULL
         AND DATE_FORMAT(NOW(), '%m %Y') != DATE_FORMAT(P.FechaInicio, '%m %Y')
         AND DATE_FORMAT(NOW(), '%06 %m %Y') != DATE_FORMAT(P.FechaFin, '%d %m %Y')
-        AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6,
-        1,
-        IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'),
-            1,
-            0)) = 1
-        AND IF(DATE_FORMAT(P.FechaInicio, '%d') >= 6
-            AND DATE_FORMAT(P.fechaInicio, '%m') = (DATE_FORMAT(NOW(), '%m') - 1),
-        0,
-        1) = 1
+        AND IF(DATE_FORMAT(P.FechaInicio, '%d') <= 6, 1, IF(DATE_FORMAT(P.FechaFin, '%m') + 1 != DATE_FORMAT(NOW(), '%m'), 1, 0 )) = 1
+        AND IF(DATE_FORMAT(P.FechaInicio, '%d') >= 6 AND DATE_FORMAT(P.fechaInicio, '%m') = (DATE_FORMAT(NOW(), '%m') - 1), 0,1 ) = 1
         AND FAM.MesFactura IS NULL;
         `).then(res => res.data);
 
