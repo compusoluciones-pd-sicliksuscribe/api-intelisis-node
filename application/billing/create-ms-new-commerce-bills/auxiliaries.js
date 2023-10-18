@@ -62,12 +62,24 @@ const auxiliariesFactory = (dependencies = defaults) => {
   });
 
   const buildBillDetails = async (billData, TipoCambio) => {
-    const cleanDetail = [];
-    const details = await Promise.all(billData.map(async order => selectPendingMsOrderDetail(1, order.IdPedido, TipoCambio)));
+    const groupDetails = [];
+    let details = await Promise.all(billData.map(async order => selectPendingMsOrderDetail(1, order.IdPedido, TipoCambio)));
+    details = JSON.parse(JSON.stringify(details));
     details.forEach(detailsData => {
-      detailsData.forEach(detail => cleanDetail.push(detail));
+      detailsData.forEach(detail => groupDetails.push(detail));
     });
-    return cleanDetail;
+
+    const combinedData = groupDetails.reduce((result, item) => {
+      const existingItem = result.find(x => x.Articulo === item.Articulo);
+      if (existingItem) {
+        existingItem.Cantidad += item.Cantidad;
+      } else {
+        result.push({ ...item });
+      }
+      return result;
+    }, []);
+
+    return combinedData;
   };
 
   const updateOrder = async (ID, order) => await patch({ Facturado: 1, IdFactura: ID }, order);
