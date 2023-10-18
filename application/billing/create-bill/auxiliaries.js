@@ -3,6 +3,9 @@ const intelisis = require('../../intelisis');
 const ordersData = require('../../../data/orders');
 const createInvoice = require('../../intelisis/create-invoice');
 const { sendNotificationErrorInsertOrder } = require('../../emails/');
+const { insertActualBill } = require('../../../data/billing');
+const { MICROSOFT } = require('../../../helpers/enums/makers');
+const { ANNUAL_MONTHLY } = require('../../../helpers/enums/renewal-schema-types');
 
 const defaults = {
   billing: billingData,
@@ -38,6 +41,7 @@ const auxiliariesFactory = (dependencies = defaults) => {
         .then(details => createInvoice(order, details))
         .then(invoiceStatus => {
           if (invoiceStatus.content.success.success === 1) {
+            if (order.IdEsquemaRenovacion === ANNUAL_MONTHLY && order.IdFabricante === MICROSOFT) insertActualBill(order.IdPedido, order.IdPedido, order.EsquemaRenovacion, order.FechaInicio, order.FechaFin);
             return updateOrder(invoiceStatus.content.success.data.id, order.IdPedido);
           }
           return sendNotificationErrorInsertOrder(order, invoiceStatus.content.success.message);

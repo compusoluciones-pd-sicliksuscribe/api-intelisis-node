@@ -5,7 +5,7 @@ const billingData = require('../../../data/billing');
 const ordersData = require('../../../data/orders');
 const { ON_DEMAND } = require('../../../helpers/enums/product-types');
 const { MICROSOFT } = require('../../../helpers/enums/makers');
-const { MONTHLY } = require('../../../helpers/enums/renewal-schema-types');
+const { MONTHLY, ANNUAL_MONTHLY } = require('../../../helpers/enums/renewal-schema-types');
 const createInvoice = require('../../intelisis/create-invoice');
 
 const { sendNotificationErrorInsertOrder } = require('../../emails/');
@@ -52,19 +52,34 @@ const auxiliariesFactory = (dependencies = defaults) => {
     Total: total,
     IVA: total * 0.16,
     Vencimiento: expiration,
+    FechaInicio: billData.FechaInicio,
+    FechaFin: billData.FechaFin,
     Agente: billData.Agente,
     EsquemaRenovacion: billData.EsquemaRenovacion,
+    IdEsquemaRenovacion: billData.IdEsquemaRenovacion,
     IdEmpresaDistribuidor: billData.IdEmpresaDistribuidor,
     IdEmpresaUsuarioFinal: billData.IdEmpresaUsuarioFinal,
   });
 
   const buildBillDetails = async (billData, TipoCambio) => {
-    const cleanDetail = [];
-    const details = await Promise.all(billData.map(async order => selectPendingMsOrderDetail(1, order.IdPedido, TipoCambio)));
+    const groupDetails = [];
+    let details = await Promise.all(billData.map(async order => selectPendingMsOrderDetail(1, order.IdPedido, TipoCambio)));
+    details = JSON.parse(JSON.stringify(details));
     details.forEach(detailsData => {
-      detailsData.forEach(detail => cleanDetail.push(detail));
+      detailsData.forEach(detail => groupDetails.push(detail));
     });
-    return cleanDetail;
+
+    const combinedData = groupDetails.reduce((result, item) => {
+      const existingItem = result.find(x => x.Articulo === item.Articulo);
+      if (existingItem) {
+        existingItem.Cantidad += item.Cantidad;
+      } else {
+        result.push({ ...item });
+      }
+      return result;
+    }, []);
+
+    return combinedData;
   };
 
   const updateOrder = async (ID, order) => await patch({ Facturado: 1, IdFactura: ID }, order);
@@ -74,7 +89,9 @@ const auxiliariesFactory = (dependencies = defaults) => {
    .then(invoiceStatus => {
      if (invoiceStatus.content.success.success === 1) {
        return order.idOrdersToBill.map(async pedido => {
-         insertActualBill(pedido, order.IdPedido);
+         if (order.IdEsquemaRenovacion === ANNUAL_MONTHLY) {
+           insertActualBill(pedido, order.IdPedido, order.EsquemaRenovacion, order.FechaInicio, order.FechaFin);
+         }
          return await updateOrder(invoiceStatus.content.success.data.id, pedido);
        });
      }
