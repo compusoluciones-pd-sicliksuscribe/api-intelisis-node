@@ -47,40 +47,36 @@ orders.getPaymentMethod = order => (
 orders.getOpenpayCCInfo = order => (
   help.d$().query(`
   SELECT 
-    op.name,
-    op.cart_id,
-    op.amount,
-    op.register_date
+    op.openpay_payment_id AS idOP,
+    op.cart_id AS des,
+    op.register_date AS date,
+    openpay_status AS status
   FROM
-      clicksuscribe.openpay_click op
-          INNER JOIN
-      traPedidos P ON P.TarjetaResultIndicator = op.openpay_payment_id
-          INNER JOIN
-      traUsuariosXEmpresas usu ON usu.IdUsuario = op.user_id
+    clicksuscribe.openpay_click op
+        INNER JOIN
+    traPedidos P ON P.TarjetaResultIndicator = op.openpay_payment_id
+        INNER JOIN
+    traUsuariosXEmpresas usu ON usu.IdUsuario = op.user_id
   WHERE
-    P.IdPedido IN (${order});
-  `)
-    .then(result => result.data[0])
+    P.IdPedido IN (${order})
+        AND openpay_status = 'completed';`)
+    .then(result => result)
 );
 
 orders.getOpenpaySpeiInfo = order => (
   help.d$().query(`
-    SELECT 
-      usu.NombreEmpresa,
-      op.descripcion,
-      op.monto,
-      op.moneda,
-      op.fechaCreacion
+  SELECT 
+    op.idOpenpay AS idOP, op.fechaCreacion AS date, status
   FROM
-      clicksuscribe.traSpeiTransaccion op
-          INNER JOIN
-      traPedidos P ON P.IdPedido = op.idPedido
-          INNER JOIN
-      traEmpresas usu ON usu.IdEmpresa = op.idEmpresa
+    clicksuscribe.traSpeiTransaccion op
+        INNER JOIN
+    traPedidos P ON P.IdPedido = op.idPedido
+        INNER JOIN
+    traEmpresas usu ON usu.IdEmpresa = op.idEmpresa
   WHERE
-      P.IdPedido IN (${order});
-    `)
-    .then(result => result.data[0])
+    P.IdPedido IN (${order})
+        AND status = 'completed';`)
+    .then(result => result)
 );
 
 module.exports = orders;

@@ -1,11 +1,11 @@
 /* eslint-disable no-case-declarations */
 const axios = require('axios');
-const moment = require('moment');
 const URL = `${process.env.INTELIS_HOST}${process.env.ROUTE_BILLING_VENTA}`;
 const projectByRFC = require('../get-project-by-rfc');
 const payments = require('../../../helpers/enums/payment-types');
 const paymentTypes = require('../../../helpers/enums/auxiliariesOpenpay');
 const ordersData = require('../../../data/orders');
+const openpayInfo = require('../get-openpay-info');
 const GENERIC_PROJECT_CLICK = 'SICLIKSUSCRIBE';
 const GENERIC_RFC_NATIONAL = 'XAXX010101000';
 const GENERIC_RFC_FOREIGN = 'XEXX010101000';
@@ -29,18 +29,6 @@ const paymentMethod = async (paymentType, order) => {
     default: method = payments.TRANSFER;
   }
   return method;
-};
-
-const openpayInfo = async (paymentFormat, order) => {
-  let opPurchaseInfo = '';
-  if (paymentFormat == paymentTypes.CARD_PAYMENT_ID) {
-    const openpayPaymentInfoCC = await ordersData.getOpenpayCCInfo(order);
-    opPurchaseInfo = `${openpayPaymentInfoCC.name}, ${openpayPaymentInfoCC.cart_id} (${paymentTypes.CARD_METHOD}), ${openpayPaymentInfoCC.amount}, ${moment(openpayPaymentInfoCC.register_date).format('DD/MM/YYYY')}`;
-  } else {
-    const openpayPaymentInfoSPEI = await ordersData.getOpenpaySpeiInfo(order);
-    opPurchaseInfo = `${openpayPaymentInfoSPEI.NombreEmpresa}, ${openpayPaymentInfoSPEI.descripcion} (${paymentTypes.SPEI_METHOD}), ${openpayPaymentInfoSPEI.monto} ${openpayPaymentInfoSPEI.OPENPAY_PESOS_CURRENCY}, ${moment(openpayPaymentInfoSPEI.fechaCreacion).format('DD/MM/YYYY')}`;
-  }
-  return opPurchaseInfo;
 };
 
 const formatDetails = async (orderDetails, fabricante) => {
@@ -74,9 +62,11 @@ const formatDetails = async (orderDetails, fabricante) => {
 
 const insertInvoiceIntelisis = async (order, details) => {
   let project = '';
+  let openpayObs = '';
   const ventaDetails = await formatDetails(details, order.IdFabricante);
   const projectExist = await projectByRFC(order.RFC);
   if (order.RFC === GENERIC_RFC_NATIONAL || order.RFC === GENERIC_RFC_FOREIGN || !projectExist.proyect_name) { project = GENERIC_PROJECT_CLICK; } else project = projectExist.proyect_name;
+  if (order.IdFormaPago === paymentTypes.CARD_PAYMENT_ID || order.IdFormaPago === paymentTypes.SPEI_ID) openpayObs = await openpayInfo(order.IdFormaPago, order.IdPedido);
 
   const body = {
     OrdenCompra: order.OrdenCompra,
@@ -99,7 +89,7 @@ const insertInvoiceIntelisis = async (order, details) => {
     AgenteServicio: 'SINAGENTE',
     ZonaImpuesto: 'Nacional',
     Causa: 'Adquisición de mercancias - G01',
-    Observaciones: order.IdFormaPago === paymentTypes.CARD_PAYMENT_ID || order.IdFormaPago === paymentTypes.SPEI_ID ? await openpayInfo(order.IdFormaPago, order.IdPedido) : order.Observaciones,
+    Observaciones: `${openpayObs} ${order.Observaciones}`,
     Comentarios: order.IdFabricante === 2 ? order.Estado : order.EsquemaRenovacion,
     ContratoDescripcion: order.IdFabricante === 1 ? `${order.Proyecto.slice(0, 79)}/${order.DominioMicrosoftUF.slice(0, 20)}` : order.Proyecto,
     VentaD: ventaDetails,
