@@ -1,6 +1,5 @@
 /* eslint-disable no-case-declarations */
 const axios = require('axios');
-const moment = require('moment');
 const URL = `${process.env.INTELIS_HOST}${process.env.ROUTE_BILLING_VENTA}`;
 const projectByRFC = require('../get-project-by-rfc');
 const payments = require('../../../helpers/enums/payment-types');
