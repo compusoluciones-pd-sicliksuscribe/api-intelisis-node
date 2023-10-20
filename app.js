@@ -74,6 +74,9 @@ app.use('/', prepaidOrderBalance);
 const updatePaidOrders = require('./api-routes/orders');
 app.use('/', updatePaidOrders);
 
+const updateCostumers = require('./api-routes/customers');
+app.use('/', updateCostumers);
+
 // Puerto que corre la API
 const port = process.env.PORT || 8088;
 app.listen(port);
